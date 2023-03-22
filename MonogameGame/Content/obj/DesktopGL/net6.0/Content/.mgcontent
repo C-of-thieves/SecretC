@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<SourceFileCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <Profile>Reach</Profile>
+  <Platform>DesktopGL</Platform>
+  <Config />
+  <SourceFiles>
+    <File>C:/Users/ramon/Documents/GitHub/MonogameGame/MonogameGame/Content/3020.jpg</File>
+    <File>C:/Users/ramon/Documents/GitHub/MonogameGame/MonogameGame/Content/depositphotos_123661768-stock-photo-floor-tiles-texture.jpg</File>
+    <File>C:/Users/ramon/Documents/GitHub/MonogameGame/MonogameGame/Content/File.fx</File>
+    <File>C:/Users/ramon/Documents/GitHub/MonogameGame/MonogameGame/Content/Pirate Ship (Idle) PREVIEW.png</File>
+  </SourceFiles>
+  <DestFiles>
+    <File>water.jpg</File>
+    <File>textureTest.jpg</File>
+    <File xsi:nil="true" />
+    <File>player.png</File>
+  </DestFiles>
+</SourceFileCollection>

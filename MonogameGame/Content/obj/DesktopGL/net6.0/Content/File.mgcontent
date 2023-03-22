@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <SourceFile>C:/Users/ramon/Documents/GitHub/MonogameGame/MonogameGame/Content/File.fx</SourceFile>
+  <SourceTime>2023-03-22T14:30:56.5330049+01:00</SourceTime>
+  <DestFile>C:/Users/ramon/Documents/GitHub/MonogameGame/MonogameGame/Content/bin/DesktopGL/Content/File.xnb</DestFile>
+  <DestTime>2023-03-22T14:55:01.7204493+01:00</DestTime>
+  <Importer>EffectImporter</Importer>
+  <ImporterTime>2022-07-26T13:44:56+02:00</ImporterTime>
+  <Processor>EffectProcessor</Processor>
+  <ProcessorTime>2022-07-26T13:44:56+02:00</ProcessorTime>
+  <Parameters>
+    <Key>DebugMode</Key>
+    <Value>Auto</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>

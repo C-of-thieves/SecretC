@@ -2,6 +2,32 @@
   "version": 3,
   "targets": {
     "net6.0": {
+      "DotnetNoise/1.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.0/DotnetNoise.dll": {}
+        },
+        "runtime": {
+          "lib/netstandard2.0/DotnetNoise.dll": {}
+        }
+      },
+      "GoRogue/2.6.4": {
+        "type": "package",
+        "dependencies": {
+          "OptimizedPriorityQueue": "4.2.0",
+          "Troschuetz.Random": "4.4.0"
+        },
+        "compile": {
+          "lib/netstandard2.0/GoRogue.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.0/GoRogue.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "MonoGame.Content.Builder.Task/3.8.1.303": {
         "type": "package",
         "build": {
@@ -54,10 +80,72 @@
             "rid": "win-x86"
           }
         }
+      },
+      "OptimizedPriorityQueue/4.2.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard1.0/Priority Queue.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard1.0/Priority Queue.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
+      },
+      "SimplexNoise/2.0.0": {
+        "type": "package",
+        "compile": {
+          "lib/netcoreapp2.2/SimplexNoise.dll": {}
+        },
+        "runtime": {
+          "lib/netcoreapp2.2/SimplexNoise.dll": {}
+        }
+      },
+      "Troschuetz.Random/4.4.0": {
+        "type": "package",
+        "compile": {
+          "lib/netstandard2.1/Troschuetz.Random.dll": {
+            "related": ".pdb;.xml"
+          }
+        },
+        "runtime": {
+          "lib/netstandard2.1/Troschuetz.Random.dll": {
+            "related": ".pdb;.xml"
+          }
+        }
       }
     }
   },
   "libraries": {
+    "DotnetNoise/1.0.0": {
+      "sha512": "GdEL8YZXceS39AsanUUwZCX/lRseX26xhbQIhB0/+yz4+rx8eWy+0vkP6isPuAecEvd0PVkXO4peNRW0wMlzhg==",
+      "type": "package",
+      "path": "dotnetnoise/1.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "dotnetnoise.1.0.0.nupkg.sha512",
+        "dotnetnoise.nuspec",
+        "lib/netstandard2.0/DotnetNoise.dll"
+      ]
+    },
+    "GoRogue/2.6.4": {
+      "sha512": "nyClW1RMfwjr+tKMU+QXDDAsXqXEvfZW+whSB2KrvHIAeVKlwN+hoYAmmnpGvXLAmV4X32RrE+IcOvkQkslW9Q==",
+      "type": "package",
+      "path": "gorogue/2.6.4",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "gorogue.2.6.4.nupkg.sha512",
+        "gorogue.nuspec",
+        "lib/netstandard2.0/GoRogue.dll",
+        "lib/netstandard2.0/GoRogue.xml",
+        "readme.txt"
+      ]
+    },
     "MonoGame.Content.Builder.Task/3.8.1.303": {
       "sha512": "9Ilzzje62LhWElbPNEl7vh7XsRSbze+lvCJdZtTZUGu48FRgvYN6THURwIB9PN98EI33/Wnf6iuShNUtD7hL4Q==",
       "type": "package",
@@ -93,12 +181,100 @@
         "runtimes/win-x86/native/SDL2.dll",
         "runtimes/win-x86/native/soft_oal.dll"
       ]
+    },
+    "OptimizedPriorityQueue/4.2.0": {
+      "sha512": "/Sr/OfCFnff7zFe6HoDyWRU8pEvJbOCE9ZjFCSH0EcfETjgvZJ2kUoqlTgVR7cgTPexOGhNATdBKQigqbYn43w==",
+      "type": "package",
+      "path": "optimizedpriorityqueue/4.2.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "lib/net20/Priority Queue.dll",
+        "lib/net20/Priority Queue.pdb",
+        "lib/net20/Priority Queue.xml",
+        "lib/net35-unity full v3.5/Priority Queue.dll",
+        "lib/net35-unity full v3.5/Priority Queue.pdb",
+        "lib/net35-unity full v3.5/Priority Queue.xml",
+        "lib/net35-unity subset v3.5/Priority Queue.dll",
+        "lib/net35-unity subset v3.5/Priority Queue.pdb",
+        "lib/net35-unity subset v3.5/Priority Queue.xml",
+        "lib/net45/Priority Queue.dll",
+        "lib/net45/Priority Queue.pdb",
+        "lib/net45/Priority Queue.xml",
+        "lib/netstandard1.0/Priority Queue.dll",
+        "lib/netstandard1.0/Priority Queue.pdb",
+        "lib/netstandard1.0/Priority Queue.xml",
+        "lib/portable-net40+sl5+win8+wpa81+wp8/Priority Queue.dll",
+        "lib/portable-net40+sl5+win8+wpa81+wp8/Priority Queue.pdb",
+        "lib/portable-net40+sl5+win8+wpa81+wp8/Priority Queue.xml",
+        "optimizedpriorityqueue.4.2.0.nupkg.sha512",
+        "optimizedpriorityqueue.nuspec"
+      ]
+    },
+    "SimplexNoise/2.0.0": {
+      "sha512": "v9q0D/5PSUx3T8ZIixjDEGlLYIDhkTbeQOgz/SddoKw16aoz4LFlg7FTu9DD0304p2m9VsHfTmygCgZ2FzIDVw==",
+      "type": "package",
+      "path": "simplexnoise/2.0.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE.txt",
+        "README.md",
+        "lib/net40/SimplexNoise.dll",
+        "lib/net45/SimplexNoise.dll",
+        "lib/net472/SimplexNoise.dll",
+        "lib/netcoreapp2.2/SimplexNoise.dll",
+        "lib/netstandard1.0/SimplexNoise.dll",
+        "lib/netstandard2.0/SimplexNoise.dll",
+        "simplexnoise.2.0.0.nupkg.sha512",
+        "simplexnoise.nuspec"
+      ]
+    },
+    "Troschuetz.Random/4.4.0": {
+      "sha512": "SIESLPNQUIo8FkfeFaaJZcE0/r+Vg6nicacYDvZB+rTOl4VTKK5lEqCW2SvkLLaUV11jnCtna73LQ7iXAHumGA==",
+      "type": "package",
+      "path": "troschuetz.random/4.4.0",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "LICENSE",
+        "icon.png",
+        "lib/net35/Troschuetz.Random.dll",
+        "lib/net35/Troschuetz.Random.pdb",
+        "lib/net35/Troschuetz.Random.xml",
+        "lib/net40/Troschuetz.Random.dll",
+        "lib/net40/Troschuetz.Random.pdb",
+        "lib/net40/Troschuetz.Random.xml",
+        "lib/net45/Troschuetz.Random.dll",
+        "lib/net45/Troschuetz.Random.pdb",
+        "lib/net45/Troschuetz.Random.xml",
+        "lib/net461/Troschuetz.Random.dll",
+        "lib/net461/Troschuetz.Random.pdb",
+        "lib/net461/Troschuetz.Random.xml",
+        "lib/net472/Troschuetz.Random.dll",
+        "lib/net472/Troschuetz.Random.pdb",
+        "lib/net472/Troschuetz.Random.xml",
+        "lib/netstandard1.0/Troschuetz.Random.dll",
+        "lib/netstandard1.0/Troschuetz.Random.pdb",
+        "lib/netstandard1.0/Troschuetz.Random.xml",
+        "lib/netstandard2.0/Troschuetz.Random.dll",
+        "lib/netstandard2.0/Troschuetz.Random.pdb",
+        "lib/netstandard2.0/Troschuetz.Random.xml",
+        "lib/netstandard2.1/Troschuetz.Random.dll",
+        "lib/netstandard2.1/Troschuetz.Random.pdb",
+        "lib/netstandard2.1/Troschuetz.Random.xml",
+        "troschuetz.random.4.4.0.nupkg.sha512",
+        "troschuetz.random.nuspec"
+      ]
     }
   },
   "projectFileDependencyGroups": {
     "net6.0": [
+      "DotnetNoise >= 1.0.0",
+      "GoRogue >= 2.6.4",
       "MonoGame.Content.Builder.Task >= 3.8.1.303",
-      "MonoGame.Framework.DesktopGL >= 3.8.1.303"
+      "MonoGame.Framework.DesktopGL >= 3.8.1.303",
+      "SimplexNoise >= 2.0.0"
     ]
   },
   "packageFolders": {
@@ -108,11 +284,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\ramon\\Documents\\GitHub\\MonogameGame\\MonogameGame\\C-Of-Thieves.csproj",
+      "projectUniqueName": "C:\\Users\\ramon\\Documents\\GitHub\\SecretC\\MonogameGame\\C-Of-Thieves.csproj",
       "projectName": "C-Of-Thieves",
-      "projectPath": "C:\\Users\\ramon\\Documents\\GitHub\\MonogameGame\\MonogameGame\\C-Of-Thieves.csproj",
+      "projectPath": "C:\\Users\\ramon\\Documents\\GitHub\\SecretC\\MonogameGame\\C-Of-Thieves.csproj",
       "packagesPath": "C:\\Users\\ramon\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\ramon\\Documents\\GitHub\\MonogameGame\\MonogameGame\\obj\\",
+      "outputPath": "C:\\Users\\ramon\\Documents\\GitHub\\SecretC\\MonogameGame\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -145,6 +321,14 @@
       "net6.0": {
         "targetAlias": "net6.0",
         "dependencies": {
+          "DotnetNoise": {
+            "target": "Package",
+            "version": "[1.0.0, )"
+          },
+          "GoRogue": {
+            "target": "Package",
+            "version": "[2.6.4, )"
+          },
           "MonoGame.Content.Builder.Task": {
             "target": "Package",
             "version": "[3.8.1.303, )"
@@ -152,6 +336,10 @@
           "MonoGame.Framework.DesktopGL": {
             "target": "Package",
             "version": "[3.8.1.303, )"
+          },
+          "SimplexNoise": {
+            "target": "Package",
+            "version": "[2.0.0, )"
           }
         },
         "imports": [

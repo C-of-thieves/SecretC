@@ -1,0 +1,14 @@
+
+*.vsidx
+*.dll
+*.exe
+MonogameGame/bin/Debug/net6.0/C-Of-Thieves.deps.json
+MonogameGame/bin/Debug/net6.0/C-Of-Thieves.pdb
+MonogameGame/bin/Debug/net6.0/C-Of-Thieves.runtimeconfig.json
+*.BuildWithSkipAnalyzers
+*.cache
+MonogameGame/obj/Debug/net6.0/C-Of-Thieves.csproj.FileListAbsolute.txt
+MonogameGame/obj/Debug/net6.0/C-Of-Thieves.pdb
+.vs/C-Of-Thieves/DesignTimeBuild/.dtbcache.v2
+*.exe
+MonogameGame/obj/Debug/net6.0/apphost.exe
