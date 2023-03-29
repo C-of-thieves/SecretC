@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Input;
+using MonogameGame;
 
 public class Player : Entity
 {
@@ -15,7 +16,7 @@ public class Player : Entity
     public int gameScreenWidth { get; private set; }
     public int gameScreenHeight { get; private set; }
 
-    public Player(Vector2 position, float healthPoints, Texture2D texture,int ganeScreenWidth, int gameScreenHeight) : base(position, healthPoints, texture)
+    public Player(Vector2 position, float healthPoints, Texture2D texture,int gameScreenWidth, int gameScreenHeight) : base(position, healthPoints, texture)
     {
         Inventory = new Inventory();
         Cannons = 0;

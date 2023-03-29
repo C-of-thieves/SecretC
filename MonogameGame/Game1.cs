@@ -78,14 +78,14 @@ public class Game1 : Game
         
 
 
-        Texture2D playerTexture = Content.Load<Texture2D>("player");
+        Texture2D playerTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
         float playerStartX = (_mapWidth * 0.5f); // Multiplied by tile size (64)
         float playerStartY = (_mapHeight * 0.5f) ; // Multiplied by tile size (64)
         _player = new Player(new Vector2(playerStartX, playerStartY), 100, playerTexture, 1800, 1200);
 
 
-        Texture2D shipTexture = Content.Load<Texture2D>("player");
-        Texture2D monsterTexture = Content.Load<Texture2D>("player");
+        Texture2D shipTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
+        Texture2D monsterTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
         _enemies = new List<Enemy>
         {
             new Enemy(new Vector2(200, 200), 50, shipTexture),
