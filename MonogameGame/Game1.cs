@@ -17,18 +17,22 @@ public class Game1 : Game
     private Color[,] _mapData;
     private Random _random;
 
+    private Camera _camera;
+
     private Player _player;
     private List<Enemy> _enemies;
 
     private Texture2D _pixel;
-    private readonly int _mapWidth = 1200;
-    private readonly int _mapHeight = 1000;
+    public readonly int _mapWidth = 24000;
+    public readonly int _mapHeight = 18000;
     private readonly float _scale = 0.1f;
     private readonly float _threshold = 0.4f;
 
     private int[,] _mapDataInt;
     private int _iterations = 5;
     private float _fillProbability = 0.45f;
+
+
 
     public Game1()
     {
@@ -42,8 +46,8 @@ public class Game1 : Game
 
     protected override void Initialize()
     {
-        _graphics.PreferredBackBufferWidth = _mapWidth;
-        _graphics.PreferredBackBufferHeight = _mapHeight;
+        _graphics.PreferredBackBufferWidth = 1800;
+        _graphics.PreferredBackBufferHeight = 1200;
         _graphics.ApplyChanges();
 
         _mapData = new Color[_mapWidth, _mapHeight];
@@ -63,12 +67,18 @@ public class Game1 : Game
 
     protected override void LoadContent()
     {
+
         _spriteBatch = new SpriteBatch(GraphicsDevice);
+        _camera = new Camera();
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
 
+        
+
+
         Texture2D playerTexture = Content.Load<Texture2D>("player");
-        _player = new Player(new Vector2(100, 100), 100, playerTexture);
+        _player = new Player(new Vector2(100, 100), 100, playerTexture, _mapWidth, _mapHeight);
+
 
         Texture2D shipTexture = Content.Load<Texture2D>("player");
         Texture2D monsterTexture = Content.Load<Texture2D>("player");
@@ -86,10 +96,10 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        
 
-        //_player.Update(gameTime);
 
+        _player.Update(gameTime);
+        _camera.Follow(_player, _mapWidth, _mapHeight);
         // Create a list to store tasks for each enemy
         List<Task> enemyTasks = new List<Task>();
 
@@ -100,6 +110,8 @@ public class Game1 : Game
             enemyTasks.Add(enemyTask);
         }
         await Task.WhenAll(enemyTasks);
+
+        
         base.Update(gameTime);
     }
 
@@ -107,10 +119,10 @@ public class Game1 : Game
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        _spriteBatch.Begin();
+        _spriteBatch.Begin(transformMatrix: _camera.Transform); //transformMatrix: _camera.Transform
         DrawMap();
         _player.Draw(_spriteBatch);
-
+        
 
         foreach (Enemy enemy in _enemies)
         {
@@ -152,7 +164,7 @@ public class Game1 : Game
     {
         int[,] newMap = new int[_mapWidth, _mapHeight];
 
-        for (int x = 0; x < _mapWidth; x++)
+        Parallel.For(0, _mapWidth, x =>
         {
             for (int y = 0; y < _mapHeight; y++)
             {
@@ -173,7 +185,7 @@ public class Game1 : Game
                     newMap[x, y] = map[x, y];
                 }
             }
-        }
+        });
 
         return newMap;
     }
@@ -207,12 +219,20 @@ public class Game1 : Game
 
     private void DrawMap()
     {
-        for (int x = 0; x < _mapWidth; x++)
+        int tileSize = 64;
+        int drawDistance = 3000; // Change this value to adjust the draw distance
+
+        int startX = (int)Math.Max(0, (_player.Position.X - drawDistance) / tileSize);
+        int startY = (int)Math.Max(0, (_player.Position.Y - drawDistance) / tileSize);
+        int endX = (int)Math.Min(_mapWidth, (_player.Position.X + drawDistance) / tileSize);
+        int endY = (int)Math.Min(_mapHeight, (_player.Position.Y + drawDistance) / tileSize);
+
+        for (int x = startX; x < endX; x++)
         {
-            for (int y = 0; y < _mapHeight; y++)
+            for (int y = startY; y < endY; y++)
             {
                 Color color = _mapDataInt[x, y] == 1 ? Color.Yellow : Color.Blue;
-                _spriteBatch.Draw(_pixel, new Rectangle(x, y, 20, 20), color);
+                _spriteBatch.Draw(_pixel, new Rectangle(x * tileSize, y * tileSize, tileSize, tileSize), color);
             }
         }
     }
