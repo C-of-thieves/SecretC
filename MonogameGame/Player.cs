@@ -12,10 +12,11 @@ public class Player : Entity
     public Inventory Inventory { get; set; }
     public int Cannons { get; set; }
     public int Crew { get; set; }
+
     public int gameScreenWidth { get; private set; }
     public int gameScreenHeight { get; private set; }
 
-    public Player(Vector2 position, float healthPoints, Texture2D texture,int ganeScreenWidth, int gameScreenHeight) : base(position, healthPoints, texture)
+    public Player(Vector2 position, float healthPoints, Texture2D texture,int gameScreenWidth, int gameScreenHeight) : base(position, healthPoints, texture)
     {
         Inventory = new Inventory();
         Cannons = 0;
@@ -24,9 +25,27 @@ public class Player : Entity
         this.gameScreenHeight = gameScreenHeight;
     }
 
-    public override void Update(GameTime gameTime)
+    public override void Update(GameTime gameTime, List<Entity> entities)
     {
-        var velocity = new Vector2();
+        var velocity = Velocity;
+
+        foreach (var entity in entities)
+        {
+            if (entity == this)
+            continue;
+
+            if ((this.Velocity.X > 0 && this.IsTouchingLeft(entity)) ||
+                (this.Velocity.X < 0 && this.IsTouchingRight(entity)))
+                velocity.X = 0;
+
+            if ((this.Velocity.Y > 0 && this.IsTouchingLeft(entity)) ||
+                (this.Velocity.Y < 0 && this.IsTouchingRight(entity)))
+                velocity.Y = 0;
+        }
+
+        Position += Velocity;
+        Velocity = Vector2.Zero;
+       
         var speed = 3f;
 
         if (Keyboard.GetState().IsKeyDown(Keys.W))
@@ -39,6 +58,7 @@ public class Player : Entity
             velocity.X = speed;
 
         Position += velocity;
+
 
     }
 }

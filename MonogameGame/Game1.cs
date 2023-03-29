@@ -14,12 +14,12 @@ public class Game1 : Game
 {
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
+    private List<Entity> _entities;
     private Color[,] _mapData;
     private Random _random;
 
     private Camera _camera;
 
-    private Player _player;
     private List<Enemy> _enemies;
 
     private Texture2D _pixel;
@@ -67,29 +67,23 @@ public class Game1 : Game
 
     protected override void LoadContent()
     {
-
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         _camera = new Camera();
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
-
         
-
-
         Texture2D playerTexture = Content.Load<Texture2D>("player");
-        _player = new Player(new Vector2(100, 100), 100, playerTexture, _mapWidth, _mapHeight);
-
-
         Texture2D shipTexture = Content.Load<Texture2D>("player");
         Texture2D monsterTexture = Content.Load<Texture2D>("player");
-        _enemies = new List<Enemy>
+
+        _entities = new List<Entity>()
         {
-            new Enemy(new Vector2(200, 200), 50, shipTexture),
-            new Enemy(new Vector2(500, 200), 50, shipTexture),
-            new Enemy(new Vector2(300, 300), 30, monsterTexture)
+           new Player(new Vector2(100, 100), 100, playerTexture, _mapWidth, _mapHeight),
+           new Enemy(new Vector2(200, 200), 50, shipTexture),
+           new Enemy(new Vector2(500, 200), 50, shipTexture),
+           new Enemy(new Vector2(300, 300), 30, monsterTexture)
         };
     }
-
 
     protected override async void Update(GameTime gameTime)
     {
@@ -97,8 +91,10 @@ public class Game1 : Game
             Exit();
 
 
+        foreach(var entity in _entities)
+        entity.Update(gameTime, _entities);
 
-        _player.Update(gameTime);
+
         _camera.Follow(_player, _mapWidth, _mapHeight);
         // Create a list to store tasks for each enemy
         List<Task> enemyTasks = new List<Task>();
@@ -123,6 +119,7 @@ public class Game1 : Game
         DrawMap();
         _player.Draw(_spriteBatch);
         
+        foreach()
 
         foreach (Enemy enemy in _enemies)
         {
