@@ -20,6 +20,7 @@ public class Game1 : Game
     private Camera _camera;
 
     private Player _player;
+    private MapGenerator _mapGenerator;
     private List<Enemy> _enemies;
 
     private Texture2D _pixel;
@@ -41,6 +42,7 @@ public class Game1 : Game
         IsMouseVisible = true;
         _random = new Random();
         _mapDataInt = new int[_mapWidth, _mapHeight];
+        _mapGenerator = new MapGenerator(_mapWidth, _mapHeight, _fillProbability, _iterations);
         //IsFixedTimeStep = false;
     }
 
@@ -60,7 +62,7 @@ public class Game1 : Game
             }
         }
 
-        GenerateIslands();
+        
 
         base.Initialize();
     }
@@ -77,7 +79,9 @@ public class Game1 : Game
 
 
         Texture2D playerTexture = Content.Load<Texture2D>("player");
-        _player = new Player(new Vector2(100, 100), 100, playerTexture, _mapWidth, _mapHeight);
+        float playerStartX = (_mapWidth * 0.5f); // Multiplied by tile size (64)
+        float playerStartY = (_mapHeight * 0.5f) ; // Multiplied by tile size (64)
+        _player = new Player(new Vector2(playerStartX, playerStartY), 100, playerTexture, 1800, 1200);
 
 
         Texture2D shipTexture = Content.Load<Texture2D>("player");
@@ -135,88 +139,6 @@ public class Game1 : Game
     }
 
 
-    private void GenerateIslands()
-    {
-        // Initial random fill
-        for (int x = 0; x < _mapWidth; x++)
-        {
-            for (int y = 0; y < _mapHeight; y++)
-            {
-                if (_random.NextDouble() < _fillProbability)
-                {
-                    _mapDataInt[x, y] = 1; // Land
-                }
-                else
-                {
-                    _mapDataInt[x, y] = 0; // Water
-                }
-            }
-        }
-
-        // Cellular automata iterations
-        for (int i = 0; i < _iterations; i++)
-        {
-            _mapDataInt = RunCellularAutomataStep(_mapDataInt);
-        }
-    }
-
-    private int[,] RunCellularAutomataStep(int[,] map)
-    {
-        int[,] newMap = new int[_mapWidth, _mapHeight];
-
-        Parallel.For(0, _mapWidth, x =>
-        {
-            for (int y = 0; y < _mapHeight; y++)
-            {
-                int adjacentLandTiles = CountAdjacentLandTiles(x, y, map);
-
-                // Rule 1: If an empty cell has 4 or more filled neighbors, fill it
-                // Rule 2: If a filled cell has 3 or fewer filled neighbors, empty it
-                if (map[x, y] == 0 && adjacentLandTiles >= 20)
-                {
-                    newMap[x, y] = 1;
-                }
-                else if (map[x, y] == 1 && adjacentLandTiles <= 3)
-                {
-                    newMap[x, y] = 0;
-                }
-                else
-                {
-                    newMap[x, y] = map[x, y];
-                }
-            }
-        });
-
-        return newMap;
-    }
-
-    private int CountAdjacentLandTiles(int x, int y, int[,] map)
-    {
-        int count = 0;
-
-        for (int i = -1; i <= 1; i++)
-        {
-            for (int j = -1; j <= 1; j++)
-            {
-                int neighborX = x + i;
-                int neighborY = y + j;
-
-                if (i == 0 && j == 0)
-                {
-                    continue;
-                }
-
-                if (neighborX >= 0 && neighborX < _mapWidth && neighborY >= 0 && neighborY < _mapHeight)
-                {
-                    count += map[neighborX, neighborY];
-                }
-            }
-        }
-
-        return count;
-    }
-
-
     private void DrawMap()
     {
         int tileSize = 64;
@@ -231,7 +153,7 @@ public class Game1 : Game
         {
             for (int y = startY; y < endY; y++)
             {
-                Color color = _mapDataInt[x, y] == 1 ? Color.Yellow : Color.Blue;
+                Color color = _mapGenerator.MapDataInt[x,y] == 1 ? Color.Yellow : Color.Blue;
                 _spriteBatch.Draw(_pixel, new Rectangle(x * tileSize, y * tileSize, tileSize, tileSize), color);
             }
         }

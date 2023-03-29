@@ -12,8 +12,8 @@ using System.Threading.Tasks;
 
     public void Follow(Player target, int mapWidth, int mapHeight)
     {
-        float cameraPositionX = -target.Position.X + (target.gameScreenWidth / 2);
-        float cameraPositionY = -target.Position.Y + (target.gameScreenHeight / 2);
+        float cameraPositionX = -target.Position.X + (target.gameScreenWidth / 2) - (target.Texture.Width / 2);
+        float cameraPositionY = -target.Position.Y + (target.gameScreenHeight / 2) - (target.Texture.Height / 2);
 
         Transform = Matrix.CreateTranslation(cameraPositionX, cameraPositionY, 0);
         Clamp(mapWidth, mapHeight, target.gameScreenWidth, target.gameScreenHeight);
