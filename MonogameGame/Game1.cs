@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using DotnetNoise;
 using System;
+using Microsoft.Xna.Framework.Media;
 
 namespace MonogameGame;
 public class Game1 : Game
@@ -92,6 +93,11 @@ public class Game1 : Game
             new Enemy(new Vector2(500, 200), 50, shipTexture),
             new Enemy(new Vector2(300, 300), 30, monsterTexture)
         };
+        Song song = Content.Load<Song>("Music/The Buccaneer's Haul Royalty Free Pirate Music");  // Put the name of your song here instead of "song_title"
+        MediaPlayer.Volume = 0.01f;
+        MediaPlayer.Play(song);
+        MediaPlayer.Volume = 0.01f;
+        MediaPlayer.IsRepeating = true;
     }
 
 

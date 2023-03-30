@@ -2419,6 +2419,12 @@
 /processorParam:DebugMode=Auto
 /build:File.fx
 
+#begin Music/The Buccaneer's Haul Royalty Free Pirate Music.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Music/The Buccaneer's Haul Royalty Free Pirate Music.mp3
+
 #begin Retina/Effects/explosion1.png
 /importer:TextureImporter
 /processor:TextureProcessor
