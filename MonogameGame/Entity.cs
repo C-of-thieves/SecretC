@@ -10,21 +10,18 @@ public abstract class Entity
 {
     public Vector2 Position { get; set; }
     public Vector2 Velocity { get; set; }
-    public float HealthPoints { get; set; }
     public Texture2D Texture { get; set; }
 
-    public Entity(Vector2 position, float healthPoints, Texture2D texture)
+    public Entity(Vector2 position, Texture2D texture)
     {
         Position = position;
-        HealthPoints = healthPoints;
         Texture = texture;
     }
 
-    public virtual void Update(GameTime gameTime) 
+    public virtual void Update(GameTime gameTime)
     {
         float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-       
         Position += Velocity * deltaTime;
     }
 
@@ -42,6 +39,7 @@ public abstract class Entity
             return new Rectangle((int)Position.X, (int)Position.Y, width, height);
         }
     }
+
     public bool CollidesWith(Entity other)
     {
         return this.BoundingBox.Intersects(other.BoundingBox);
@@ -53,18 +51,14 @@ public abstract class Entity
 
         Position += mtv;
         other.Position -= mtv;
-
     }
 
     private Vector2 CalculateMTV(Entity other)
     {
         Rectangle intersection = Rectangle.Intersect(BoundingBox, other.BoundingBox);
         Vector2 direction = Vector2.Normalize(Position - other.Position);
-        float distance = intersection.Width > intersection.Height ?
-            intersection.Height :
-            intersection.Width;
+        float distance = intersection.Width > intersection.Height ? intersection.Height : intersection.Width;
         Vector2 mtv = direction * distance;
         return mtv;
     }
 }
-

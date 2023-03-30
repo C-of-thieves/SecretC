@@ -23,7 +23,7 @@ public class Game1 : Game
 
     private Player _player;
     private MapGenerator _mapGenerator;
-    private List<Enemy> _enemies;
+    public List<Enemy> _enemies;
 
     private Texture2D _pixel;
     public readonly int _mapWidth = 24000;
@@ -71,20 +71,15 @@ public class Game1 : Game
 
     protected override void LoadContent()
     {
-
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         _camera = new Camera();
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
-
-         Art.Load(Content);
-
-
-        Texture2D playerTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
+        Art.Load(Content);
+        
         float playerStartX = (_mapWidth * 0.5f); // Multiplied by tile size (64)
-        float playerStartY = (_mapHeight * 0.5f) ; // Multiplied by tile size (64)
-
-       
+        float playerStartY = (_mapHeight * 0.5f); // Multiplied by tile size (64)
+        
         _player = new Player(new Vector2(playerStartX, playerStartY), 100, Art.GetPlayerTexture(), 1800, 1200);
 
         _mapData = new Color[_mapWidth, _mapHeight];
@@ -103,9 +98,6 @@ public class Game1 : Game
         // Wait for the map data generation task to complete
         generateMapDataTask.Wait();
 
-        Texture2D shipTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
-        Texture2D monsterTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
-
         // Define minimum and maximum distance from player
         float minDistance = 500;
         float maxDistance = 2500;
@@ -114,8 +106,7 @@ public class Game1 : Game
         Random random = new Random();
 
         _enemies = new List<Enemy> { };
-
-
+        
         // Loop to spawn multiple enemies
         for (int i = 0; i < enemyCount; i++)
         {
@@ -131,9 +122,10 @@ public class Game1 : Game
             Enemy newEnemy = new Enemy(new Vector2(enemyX, enemyY), 50, Art.GetEnemyTexture());
             
             _enemies.Add(newEnemy);
-        }         
-        
-        Song song = Content.Load<Song>("Music/The Buccaneer's Haul Royalty Free Pirate Music");  // Put the name of your song here instead of "song_title"
+        }
+
+        Song song = Content.Load<Song>(
+            "Music/The Buccaneer's Haul Royalty Free Pirate Music"); // Put the name of your song here instead of "song_title"
         MediaPlayer.Volume = 0.01f;
         MediaPlayer.Play(song);
         MediaPlayer.Volume = 0.01f;
@@ -143,12 +135,43 @@ public class Game1 : Game
 
     protected override async void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+            Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
+        List<CannonBall> cannonBallsToRemove = new List<CannonBall>();
+        List<Enemy> enemiesToRemove = new List<Enemy>();
 
         _player.Update(gameTime);
         _camera.Follow(_player, _mapWidth, _mapHeight);
+
+        if (Keyboard.GetState().IsKeyDown(Keys.Space))
+        {
+            foreach (CannonBall cannonBall in _player.cannonBalls)
+            {
+                foreach (Enemy enemy in _enemies)
+                {
+                    if (cannonBall.BoundingBox.Intersects(enemy.BoundingBox))
+                    {
+                       
+                        enemiesToRemove.Add(enemy);
+
+                        // Add the cannon ball to the list of cannon balls to remove
+                        cannonBallsToRemove.Add(cannonBall);
+                        break;
+                    }
+                }
+            }
+            foreach (var enemyToRemove in enemiesToRemove)
+            {
+                _enemies.Remove(enemyToRemove);
+            }
+            foreach (var cannonBallToRemove in cannonBallsToRemove)
+            {
+                _player.cannonBalls.Remove(cannonBallToRemove);
+            }
+
+        }
         // Create a list to store tasks for each enemy
         List<Task> enemyTasks = new List<Task>();
 
@@ -164,9 +187,10 @@ public class Game1 : Game
                 enemy.HandleCollision(_player);
             }
         }
+
         await Task.WhenAll(enemyTasks);
 
-        
+
         base.Update(gameTime);
     }
 
@@ -174,7 +198,7 @@ public class Game1 : Game
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        _spriteBatch.Begin(transformMatrix: _camera.Transform); //transformMatrix: _camera.Transform
+        _spriteBatch.Begin(transformMatrix: _camera.Transform); //transformMatrix: _camera.Transform     
         DrawMap();
         _player.Draw(_spriteBatch);
         

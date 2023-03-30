@@ -5,20 +5,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MonogameGame;
 
 public class Enemy : Entity
 {
     public List<Item> DroppedItems { get; set; }
     private float _timer;
     private Vector2 _randomDirection;
-    private Random random= new Random();
+    private Random random = new Random();
     private EnemyState CurrentState;
+    public float healthPoints;
 
-    public Enemy(Vector2 position, float healthPoints, Texture2D texture) : base(position, healthPoints, texture)
+    public Enemy(Vector2 position, float healthPoints, Texture2D texture) : base(position, texture)
     {
         DroppedItems = new List<Item>();
         _timer = 0;
         _randomDirection = Vector2.Zero;
+        healthPoints = 100;
     }
 
     public enum EnemyState
@@ -66,15 +69,18 @@ public class Enemy : Entity
                 {
                     _timer = 0;
                 }
+
                 break;
 
             case EnemyState.Wander:
                 if (_timer >= wanderTime)
                 {
-                    _randomDirection = new Vector2((float)(2 * random.NextDouble() - 1), (float)(2 * random.NextDouble() - 1));
+                    _randomDirection = new Vector2((float)(2 * random.NextDouble() - 1),
+                        (float)(2 * random.NextDouble() - 1));
                     _randomDirection.Normalize();
                     _timer = 0;
                 }
+
                 Position += _randomDirection * speed;
                 break;
 
@@ -87,5 +93,7 @@ public class Enemy : Entity
                 Position += directionToPlayer * speed;
                 break;
         }
+
+
     }
 }

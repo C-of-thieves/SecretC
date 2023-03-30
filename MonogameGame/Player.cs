@@ -11,22 +11,36 @@ using MonogameGame;
 public class Player : Entity
 {
     public Inventory Inventory { get; set; }
-    public int Cannons { get; set; }
-    public int Crew { get; set; }
     public int gameScreenWidth { get; private set; }
     public int gameScreenHeight { get; private set; }
+    public int Ammunition { get; set; }
 
-    public Player(Vector2 position, float healthPoints, Texture2D texture,int gameScreenWidth, int gameScreenHeight) : base(position, healthPoints, texture)
+    public List<CannonBall> cannonBalls = new List<CannonBall>();
+    private const int cannonballSpeed = 10;
+    private const int cannonballDamage = 10;
+
+
+    public Player(Vector2 position, float healthPoints, Texture2D texture, int gameScreenWidth, int gameScreenHeight) :
+        base(position, texture)
     {
         Inventory = new Inventory();
-        Cannons = 0;
-        Crew = 0;
         this.gameScreenWidth = gameScreenWidth;
         this.gameScreenHeight = gameScreenHeight;
+        Ammunition = 100;
+        healthPoints = 100;
     }
+  /*  public void LoadCannon()
+    {
+        for (int i = Ammunition; i > 0; i--)
+        {
+            cannonBalls.Add(new CannonBall(Position, cannonballSpeed, cannonballDamage, Art.GetCannonBallTexture()));
+            Ammunition--;
+        }
+    }*/
 
     public override void Update(GameTime gameTime)
     {
+       // LoadCannon();
         var velocity = new Vector2();
         var speed = 3f;
 
@@ -39,7 +53,25 @@ public class Player : Entity
         else if (Keyboard.GetState().IsKeyDown(Keys.D))
             velocity.X = speed;
 
+        if (Keyboard.GetState().IsKeyDown(Keys.Space) && Ammunition > 0)
+        {
+            
+            cannonBalls.Add(new CannonBall(Position, cannonballSpeed, cannonballDamage, Art.GetCannonBallTexture()));
+            cannonBalls.Add(new CannonBall(Position, cannonballSpeed, cannonballDamage, Art.GetCannonBallTexture()));
+            cannonBalls.Add(new CannonBall(Position, cannonballSpeed, cannonballDamage, Art.GetCannonBallTexture()));
+            cannonBalls.Add(new CannonBall(Position, cannonballSpeed, cannonballDamage, Art.GetCannonBallTexture()));
+            cannonBalls.Add(new CannonBall(Position, cannonballSpeed, cannonballDamage, Art.GetCannonBallTexture()));
+            Ammunition--;
+        }
+
+        foreach (CannonBall cannonball in cannonBalls)
+        {
+            cannonball.Update(gameTime);
+        }
+
         Position += velocity;
 
+
+        base.Update(gameTime);
     }
 }
