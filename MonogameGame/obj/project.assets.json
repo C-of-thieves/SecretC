@@ -18,10 +18,14 @@
           "Troschuetz.Random": "4.4.0"
         },
         "compile": {
-          "lib/netstandard2.0/GoRogue.dll": {}
+          "lib/netstandard2.0/GoRogue.dll": {
+            "related": ".xml"
+          }
         },
         "runtime": {
-          "lib/netstandard2.0/GoRogue.dll": {}
+          "lib/netstandard2.0/GoRogue.dll": {
+            "related": ".xml"
+          }
         }
       },
       "MonoGame.Content.Builder.Task/3.8.1.303": {
@@ -80,10 +84,14 @@
       "OptimizedPriorityQueue/4.2.0": {
         "type": "package",
         "compile": {
-          "lib/netstandard1.0/Priority Queue.dll": {}
+          "lib/netstandard1.0/Priority Queue.dll": {
+            "related": ".pdb;.xml"
+          }
         },
         "runtime": {
-          "lib/netstandard1.0/Priority Queue.dll": {}
+          "lib/netstandard1.0/Priority Queue.dll": {
+            "related": ".pdb;.xml"
+          }
         }
       },
       "SimplexNoise/2.0.0": {
@@ -98,10 +106,14 @@
       "Troschuetz.Random/4.4.0": {
         "type": "package",
         "compile": {
-          "lib/netstandard2.1/Troschuetz.Random.dll": {}
+          "lib/netstandard2.1/Troschuetz.Random.dll": {
+            "related": ".pdb;.xml"
+          }
         },
         "runtime": {
-          "lib/netstandard2.1/Troschuetz.Random.dll": {}
+          "lib/netstandard2.1/Troschuetz.Random.dll": {
+            "related": ".pdb;.xml"
+          }
         }
       }
     }
@@ -266,24 +278,19 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\Carla\\.nuget\\packages\\": {},
-    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+    "C:\\Users\\iando\\.nuget\\packages\\": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "D:\\Documents\\GitHub\\C-of-thieves\\SecretC\\MonogameGame\\C-Of-Thieves.csproj",
+      "projectUniqueName": "C:\\Users\\iando\\Source\\Repos\\SecretC\\MonogameGame\\C-Of-Thieves.csproj",
       "projectName": "C-Of-Thieves",
-      "projectPath": "D:\\Documents\\GitHub\\C-of-thieves\\SecretC\\MonogameGame\\C-Of-Thieves.csproj",
-      "packagesPath": "C:\\Users\\Carla\\.nuget\\packages\\",
-      "outputPath": "D:\\Documents\\GitHub\\C-of-thieves\\SecretC\\MonogameGame\\obj\\",
+      "projectPath": "C:\\Users\\iando\\Source\\Repos\\SecretC\\MonogameGame\\C-Of-Thieves.csproj",
+      "packagesPath": "C:\\Users\\iando\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\iando\\Source\\Repos\\SecretC\\MonogameGame\\obj\\",
       "projectStyle": "PackageReference",
-      "fallbackFolders": [
-        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
-      ],
       "configFilePaths": [
-        "C:\\Users\\Carla\\AppData\\Roaming\\NuGet\\NuGet.Config",
-        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Users\\iando\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [
@@ -336,7 +343,8 @@
           "net47",
           "net471",
           "net472",
-          "net48"
+          "net48",
+          "net481"
         ],
         "assetTargetFallback": true,
         "warn": true,
@@ -345,7 +353,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
       }
     }
   }

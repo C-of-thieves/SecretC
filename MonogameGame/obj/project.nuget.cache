@@ -1,16 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "RtUE3XDg/VP4yykeD0pXdJgFYYZD87i++31dIEjtVv+U4X+0nA2U8GJRrM7bqg1yu/xjjP4Ae60nyxEEd6w4vA==",
+  "dgSpecHash": "50TcB7xppEeKe6ZCW2rzmN9/on9PA/e0lvjFA4hv+/SuDKzbo+mCw3F6jfejhlZCVBB4kVPT9MlV0KYR23/ExA==",
   "success": true,
-  "projectFilePath": "D:\\Documents\\GitHub\\C-of-thieves\\SecretC\\MonogameGame\\C-Of-Thieves.csproj",
+  "projectFilePath": "C:\\Users\\iando\\Source\\Repos\\SecretC\\MonogameGame\\C-Of-Thieves.csproj",
   "expectedPackageFiles": [
-    "C:\\Users\\Carla\\.nuget\\packages\\dotnetnoise\\1.0.0\\dotnetnoise.1.0.0.nupkg.sha512",
-    "C:\\Users\\Carla\\.nuget\\packages\\gorogue\\2.6.4\\gorogue.2.6.4.nupkg.sha512",
-    "C:\\Users\\Carla\\.nuget\\packages\\monogame.content.builder.task\\3.8.1.303\\monogame.content.builder.task.3.8.1.303.nupkg.sha512",
-    "C:\\Users\\Carla\\.nuget\\packages\\monogame.framework.desktopgl\\3.8.1.303\\monogame.framework.desktopgl.3.8.1.303.nupkg.sha512",
-    "C:\\Users\\Carla\\.nuget\\packages\\optimizedpriorityqueue\\4.2.0\\optimizedpriorityqueue.4.2.0.nupkg.sha512",
-    "C:\\Users\\Carla\\.nuget\\packages\\simplexnoise\\2.0.0\\simplexnoise.2.0.0.nupkg.sha512",
-    "C:\\Users\\Carla\\.nuget\\packages\\troschuetz.random\\4.4.0\\troschuetz.random.4.4.0.nupkg.sha512"
+    "C:\\Users\\iando\\.nuget\\packages\\dotnetnoise\\1.0.0\\dotnetnoise.1.0.0.nupkg.sha512",
+    "C:\\Users\\iando\\.nuget\\packages\\gorogue\\2.6.4\\gorogue.2.6.4.nupkg.sha512",
+    "C:\\Users\\iando\\.nuget\\packages\\monogame.content.builder.task\\3.8.1.303\\monogame.content.builder.task.3.8.1.303.nupkg.sha512",
+    "C:\\Users\\iando\\.nuget\\packages\\monogame.framework.desktopgl\\3.8.1.303\\monogame.framework.desktopgl.3.8.1.303.nupkg.sha512",
+    "C:\\Users\\iando\\.nuget\\packages\\optimizedpriorityqueue\\4.2.0\\optimizedpriorityqueue.4.2.0.nupkg.sha512",
+    "C:\\Users\\iando\\.nuget\\packages\\simplexnoise\\2.0.0\\simplexnoise.2.0.0.nupkg.sha512",
+    "C:\\Users\\iando\\.nuget\\packages\\troschuetz.random\\4.4.0\\troschuetz.random.4.4.0.nupkg.sha512"
   ],
   "logs": []
 }

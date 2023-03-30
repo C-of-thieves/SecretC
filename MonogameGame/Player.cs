@@ -27,7 +27,6 @@ public class Player : Entity
 
     public override void Update(GameTime gameTime)
     {
-        
         var velocity = new Vector2();
         var speed = 3f;
 
@@ -42,7 +41,5 @@ public class Player : Entity
 
         Position += velocity;
 
-       
     }
-
 }
