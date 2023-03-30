@@ -89,11 +89,20 @@ public class Game1 : Game
 
         Texture2D shipTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
         Texture2D monsterTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
+
+        // Define the spawn range around the player
+        int spawnRange = 200;
+
+        // Generate random coordinates within the spawn range
+        Random random = new Random();
+        float spawnX = _player.Position.X + random.Next(-spawnRange, spawnRange);
+        float spawnY = _player.Position.Y + random.Next(-spawnRange, spawnRange);
+
         _enemies = new List<Enemy>
         {
-            new Enemy(new Vector2(200, 200), 50, Art.GetEnemyTexture()),
-            new Enemy(new Vector2(500, 200), 50, Art.GetEnemyTexture()),
-            new Enemy(new Vector2(300, 300), 30, Art.GetEnemyTexture())
+            new Enemy(new Vector2(spawnX, spawnY), 50, Art.GetEnemyTexture()),
+            new Enemy(new Vector2(spawnX, spawnY), 50, Art.GetEnemyTexture()),
+            new Enemy(new Vector2(spawnX, spawnY), 30, Art.GetEnemyTexture())
         };
         Song song = Content.Load<Song>("Music/The Buccaneer's Haul Royalty Free Pirate Music");  // Put the name of your song here instead of "song_title"
         MediaPlayer.Volume = 0.01f;
