@@ -11,7 +11,11 @@ public class Enemy : Entity
     public List<Item> DroppedItems { get; set; }
     private float _timer;
     private Vector2 _randomDirection;
+<<<<<<< HEAD
     private Random random= new Random();
+=======
+    private Random random = new Random();
+>>>>>>> newCollision
     private EnemyState CurrentState;
 
     public Enemy(Vector2 position, float healthPoints, Texture2D texture) : base(position, healthPoints, texture)
@@ -87,5 +91,9 @@ public class Enemy : Entity
                 Position += directionToPlayer * speed;
                 break;
         }
+<<<<<<< HEAD
+=======
+
+>>>>>>> newCollision
     }
 }

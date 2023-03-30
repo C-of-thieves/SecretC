@@ -76,17 +76,20 @@ public class Game1 : Game
         _camera = new Camera();
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
+       
+        Art.Load(Content);
 
-        
-
-
-        Texture2D playerTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
         float playerStartX = (_mapWidth * 0.5f); // Multiplied by tile size (64)
         float playerStartY = (_mapHeight * 0.5f) ; // Multiplied by tile size (64)
 
-        Art.Load(Content);
+       
         _player = new Player(new Vector2(playerStartX, playerStartY), 100, Art.GetPlayerTexture(), 1800, 1200);
+       
+        float minDistance = 500;
+        float maxDistance = 2500;
+        int enemyCount = 40;
 
+<<<<<<< HEAD
 
         Texture2D shipTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
         Texture2D monsterTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
@@ -98,11 +101,18 @@ public class Game1 : Game
 
         Random random = new Random();
 
+=======
+       
+        Random random = new Random();
+
+
+>>>>>>> newCollision
         _enemies = new List<Enemy> { };
 
 
         // Loop to spawn multiple enemies
         for (int i = 0; i < enemyCount; i++)
+<<<<<<< HEAD
         {
             // Calculate random angle and distance from player
             float angle = (float)(random.NextDouble() * Math.PI * 2);
@@ -119,6 +129,25 @@ public class Game1 : Game
         }         
         
         Song song = Content.Load<Song>("Music/The Buccaneer's Haul Royalty Free Pirate Music");  // Put the name of your song here instead of "song_title"
+=======
+        { 
+            float angle = (float)(random.NextDouble() * Math.PI * 2);
+            float distance = (float)(random.NextDouble() * (maxDistance - minDistance) + minDistance);
+
+        // Calculate enemy position relative to player
+            float enemyX = _player.Position.X + distance * (float)Math.Cos(angle);
+            float enemyY = _player.Position.Y + distance * (float)Math.Sin(angle);
+
+        // Create and add new enemy to list
+            Enemy newEnemy = new Enemy(new Vector2(enemyX, enemyY), 50, Art.GetEnemyTexture());
+
+        _enemies.Add(newEnemy);
+    }
+
+
+
+    Song song = Content.Load<Song>("Music/The Buccaneer's Haul Royalty Free Pirate Music");  // Put the name of your song here instead of "song_title"
+>>>>>>> newCollision
         MediaPlayer.Volume = 0.01f;
         MediaPlayer.Play(song);
         MediaPlayer.Volume = 0.01f;
@@ -131,9 +160,8 @@ public class Game1 : Game
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-
-
         _player.Update(gameTime);
+
         _camera.Follow(_player, _mapWidth, _mapHeight);
         // Create a list to store tasks for each enemy
         List<Task> enemyTasks = new List<Task>();
@@ -143,11 +171,18 @@ public class Game1 : Game
             enemy.Update(gameTime);
             Task enemyTask = Task.Run(() => enemy.PerformAI(_player));
             enemyTasks.Add(enemyTask);
+
+
+            if (_player.CollidesWith(enemy))
+                {
+                    _player.HandleCollision(enemy);
+                    enemy.HandleCollision(_player);
+                }
         }
         await Task.WhenAll(enemyTasks);
 
-        
-        base.Update(gameTime);
+       
+            base.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
@@ -156,10 +191,10 @@ public class Game1 : Game
 
         _spriteBatch.Begin(transformMatrix: _camera.Transform); //transformMatrix: _camera.Transform
         DrawMap();
-        _player.Draw(_spriteBatch);
-        
 
-        foreach (Enemy enemy in _enemies)
+     
+         _player.Draw(_spriteBatch);
+        foreach (var enemy in _enemies)
         {
             enemy.Draw(_spriteBatch);
         }

@@ -1,20 +1,24 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\iando\\Source\\Repos\\SecretC\\MonogameGame\\C-Of-Thieves.csproj": {}
+    "D:\\Documents\\GitHub\\C-of-thieves\\SecretC\\MonogameGame\\C-Of-Thieves.csproj": {}
   },
   "projects": {
-    "C:\\Users\\iando\\Source\\Repos\\SecretC\\MonogameGame\\C-Of-Thieves.csproj": {
+    "D:\\Documents\\GitHub\\C-of-thieves\\SecretC\\MonogameGame\\C-Of-Thieves.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\iando\\Source\\Repos\\SecretC\\MonogameGame\\C-Of-Thieves.csproj",
+        "projectUniqueName": "D:\\Documents\\GitHub\\C-of-thieves\\SecretC\\MonogameGame\\C-Of-Thieves.csproj",
         "projectName": "C-Of-Thieves",
-        "projectPath": "C:\\Users\\iando\\Source\\Repos\\SecretC\\MonogameGame\\C-Of-Thieves.csproj",
-        "packagesPath": "C:\\Users\\iando\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\iando\\Source\\Repos\\SecretC\\MonogameGame\\obj\\",
+        "projectPath": "D:\\Documents\\GitHub\\C-of-thieves\\SecretC\\MonogameGame\\C-Of-Thieves.csproj",
+        "packagesPath": "C:\\Users\\Carla\\.nuget\\packages\\",
+        "outputPath": "D:\\Documents\\GitHub\\C-of-thieves\\SecretC\\MonogameGame\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\iando\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Carla\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
@@ -67,8 +71,7 @@
             "net47",
             "net471",
             "net472",
-            "net48",
-            "net481"
+            "net48"
           ],
           "assetTargetFallback": true,
           "warn": true,
@@ -77,7 +80,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\7.0.201\\RuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\6.0.201\\RuntimeIdentifierGraph.json"
         }
       }
     }
