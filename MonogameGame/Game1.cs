@@ -77,14 +77,14 @@ public class Game1 : Game
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
 
-        
+         Art.Load(Content);
 
 
         Texture2D playerTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
         float playerStartX = (_mapWidth * 0.5f); // Multiplied by tile size (64)
         float playerStartY = (_mapHeight * 0.5f) ; // Multiplied by tile size (64)
 
-        Art.Load(Content);
+       
         _player = new Player(new Vector2(playerStartX, playerStartY), 100, Art.GetPlayerTexture(), 1800, 1200);
 
         _mapData = new Color[_mapWidth, _mapHeight];
@@ -147,7 +147,6 @@ public class Game1 : Game
             Exit();
 
 
-
         _player.Update(gameTime);
         _camera.Follow(_player, _mapWidth, _mapHeight);
         // Create a list to store tasks for each enemy
@@ -158,6 +157,12 @@ public class Game1 : Game
             enemy.Update(gameTime);
             Task enemyTask = Task.Run(() => enemy.PerformAI(_player));
             enemyTasks.Add(enemyTask);
+
+            if (_player.CollidesWith(enemy))
+            {
+                _player.HandleCollision(enemy);
+                enemy.HandleCollision(_player);
+            }
         }
         await Task.WhenAll(enemyTasks);
 
