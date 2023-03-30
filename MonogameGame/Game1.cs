@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using DotnetNoise;
 using System;
 using Microsoft.Xna.Framework.Media;
+using Troschuetz.Random;
 
 namespace MonogameGame;
 public class Game1 : Game
@@ -90,20 +91,33 @@ public class Game1 : Game
         Texture2D shipTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
         Texture2D monsterTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
 
-        // Define the spawn range around the player
-        int spawnRange = 200;
+        // Define minimum and maximum distance from player
+        float minDistance = 100;
+        float maxDistance = 500;
+        int enemyCount = 100;
 
-        // Generate random coordinates within the spawn range
         Random random = new Random();
-        float spawnX = _player.Position.X + random.Next(-spawnRange, spawnRange);
-        float spawnY = _player.Position.Y + random.Next(-spawnRange, spawnRange);
 
-        _enemies = new List<Enemy>
+        _enemies = new List<Enemy> { };
+
+
+        // Loop to spawn multiple enemies
+        for (int i = 0; i < enemyCount; i++)
         {
-            new Enemy(new Vector2(spawnX, spawnY), 50, Art.GetEnemyTexture()),
-            new Enemy(new Vector2(spawnX, spawnY), 50, Art.GetEnemyTexture()),
-            new Enemy(new Vector2(spawnX, spawnY), 30, Art.GetEnemyTexture())
-        };
+            // Calculate random angle and distance from player
+            float angle = (float)(random.NextDouble() * Math.PI * 2);
+            float distance = (float)(random.NextDouble() * (maxDistance - minDistance) + minDistance);
+
+            // Calculate enemy position relative to player
+            float enemyX = _player.Position.X + distance * (float)Math.Cos(angle);
+            float enemyY = _player.Position.Y + distance * (float)Math.Sin(angle);
+
+            // Create and add new enemy to list
+            Enemy newEnemy = new Enemy(new Vector2(enemyX, enemyY), 50, Art.GetEnemyTexture());
+            
+            _enemies.Add(newEnemy);
+        }         
+        
         Song song = Content.Load<Song>("Music/The Buccaneer's Haul Royalty Free Pirate Music");  // Put the name of your song here instead of "song_title"
         MediaPlayer.Volume = 0.01f;
         MediaPlayer.Play(song);
