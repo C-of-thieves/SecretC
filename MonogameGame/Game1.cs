@@ -54,7 +54,7 @@ public class Game1 : Game
         _graphics.PreferredBackBufferHeight = 1200;
         _graphics.ApplyChanges();
 
-        _mapData = new Color[_mapWidth, _mapHeight];
+        /*_mapData = new Color[_mapWidth, _mapHeight];
 
         for (int x = 0; x < _mapWidth; x++)
         {
@@ -64,7 +64,7 @@ public class Game1 : Game
             }
         }
 
-        
+        */
 
         base.Initialize();
     }
@@ -87,6 +87,21 @@ public class Game1 : Game
         Art.Load(Content);
         _player = new Player(new Vector2(playerStartX, playerStartY), 100, Art.GetPlayerTexture(), 1800, 1200);
 
+        _mapData = new Color[_mapWidth, _mapHeight];
+
+        Task generateMapDataTask = Task.Run(() =>
+        {
+            for (int x = 0; x < _mapWidth; x++)
+            {
+                for (int y = 0; y < _mapHeight; y++)
+                {
+                    _mapData[x, y] = Color.Blue; // Fill the map with water
+                }
+            }
+        });
+
+        // Wait for the map data generation task to complete
+        generateMapDataTask.Wait();
 
         Texture2D shipTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
         Texture2D monsterTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
