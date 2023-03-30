@@ -14,3 +14,5 @@ MonogameGame/obj/Debug/net6.0/C-Of-Thieves.pdb
 MonogameGame/obj/Debug/net6.0/apphost.exe
 *.v2
 .vs/C-Of-Thieves/v17/.suo
+MonogameGame/obj/
+.vs/
