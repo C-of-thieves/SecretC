@@ -92,9 +92,9 @@ public class Game1 : Game
         Texture2D monsterTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
 
         // Define minimum and maximum distance from player
-        float minDistance = 100;
-        float maxDistance = 500;
-        int enemyCount = 100;
+        float minDistance = 500;
+        float maxDistance = 2500;
+        int enemyCount = 40;
 
         Random random = new Random();
 

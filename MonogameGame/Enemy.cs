@@ -36,13 +36,13 @@ public class Enemy : Entity
         float distanceToPlayer = Vector2.Distance(Position, player.Position);
 
         // Define thresholds for changing states
-        float chaseDistanceThreshold = 300f;
-        float idleDistanceThreshold = 500f;
+        float chaseDistanceThreshold = 800f;
+        float idleDistanceThreshold = 1200f;
         float idleTime = 180; // 3 seconds at 60 FPS
         float wanderTime = 240; // 4 seconds at 60 FPS
 
         // Adjust the speed value to control how fast monsters move
-        float speed = 0.5f;
+        float speed = 0.8f;
 
         // Update enemy state based on the distance to the player
         if (distanceToPlayer < chaseDistanceThreshold)
