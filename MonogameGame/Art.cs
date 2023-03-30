@@ -37,20 +37,14 @@ static class Art
         random = new Random();
         int num = random.Next(5);
 
-        switch (num)
+        return num switch
         {
-            case 1:
-                return enemyTexture1;
-            case 2:
-                return enemyTexture2;
-            case 3:
-                return enemyTexture3;
-            case 4:
-                return enemyTexture4;
-            case 5:
-                return enemyTexture5;
-            default:
-                return enemyTexture1;
-        }
+            1 => enemyTexture1,
+            2 => enemyTexture2,
+            3 => enemyTexture3,
+            4 => enemyTexture4,
+            5 => enemyTexture5,
+            _ => enemyTexture1,
+        };
     }
 }
