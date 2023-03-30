@@ -30,7 +30,7 @@ public class Game1 : Game
     private readonly float _threshold = 0.4f;
 
     private int[,] _mapDataInt;
-    private int _iterations = 5;
+    private int _iterations = 2;
     private float _fillProbability = 0.45f;
 
 
