@@ -10,6 +10,8 @@ using DotnetNoise;
 using System;
 using Microsoft.Xna.Framework.Media;
 using Troschuetz.Random;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace MonogameGame;
 public class Game1 : Game
@@ -18,6 +20,8 @@ public class Game1 : Game
     private SpriteBatch _spriteBatch;
     private Color[,] _mapData;
     private Random _random;
+
+    private bool _isSaving;
 
     private Camera _camera;
 
@@ -145,29 +149,38 @@ public class Game1 : Game
     {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
-
-
-        _player.Update(gameTime);
-        _camera.Follow(_player, _mapWidth, _mapHeight);
-        // Create a list to store tasks for each enemy
-        List<Task> enemyTasks = new List<Task>();
-
-        foreach (Enemy enemy in _enemies)
+        // checks if the gamestate should be locked during saving.
+        if (!_isSaving)
         {
-            enemy.Update(gameTime);
-            Task enemyTask = Task.Run(() => enemy.PerformAI(_player));
-            enemyTasks.Add(enemyTask);
-
-            if (_player.CollidesWith(enemy))
+            if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                _player.HandleCollision(enemy);
-                enemy.HandleCollision(_player);
+                _isSaving = true; 
+                await SaveGameStateAsync();
+                Thread.Sleep(1000);
+                _isSaving = false; // release the lock
             }
-        }
-        await Task.WhenAll(enemyTasks);
+            _player.Update(gameTime);
+            _camera.Follow(_player, _mapWidth, _mapHeight);
+            // Create a list to store tasks for each enemy
+            List<Task> enemyTasks = new List<Task>();
 
-        
-        base.Update(gameTime);
+            foreach (Enemy enemy in _enemies)
+            {
+                enemy.Update(gameTime);
+                Task enemyTask = Task.Run(() => enemy.PerformAI(_player));
+                enemyTasks.Add(enemyTask);
+
+                if (_player.CollidesWith(enemy))
+                {
+                    _player.HandleCollision(enemy);
+                    enemy.HandleCollision(_player);
+                }
+            }
+            await Task.WhenAll(enemyTasks);
+
+
+            base.Update(gameTime);
+        }
     }
 
     protected override void Draw(GameTime gameTime)
@@ -210,6 +223,32 @@ public class Game1 : Game
         }
     }
 
+
+    private async Task SaveGameStateAsync()
+    {
+        string filePath = "Savegame.xml"; //Saves the game to the bin folder for now. So no Appdata shenanigans yet.
+        GameState gameState = new()
+        {
+            playerPosition = _player.Position,
+            playerHealth = _player.HealthPoints,
+            playerCannons= _player.Cannons,
+            playerCrew= _player.Crew
+        };
+        //gameState.Player = _player;
+
+        foreach (Enemy enemy in _enemies)
+        {
+            gameState.enemyPositions.Add(enemy.Position);
+        }
+
+        XmlSerializer serializer = new XmlSerializer(typeof(GameState));
+
+        using (StreamWriter writer = new StreamWriter(filePath, false))
+        {
+            await writer.WriteAsync("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+            serializer.Serialize(writer, gameState);
+        }
+    }
 
 
 }
