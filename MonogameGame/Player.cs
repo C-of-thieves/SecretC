@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework.Input;
 using MonogameGame;
+using System.Xml.Linq;
 
 public class Player : Entity
 {
@@ -16,13 +17,11 @@ public class Player : Entity
     public int gameScreenWidth { get; private set; }
     public int gameScreenHeight { get; private set; }
 
-    public Player(Vector2 position, float healthPoints, Texture2D texture,int gameScreenWidth, int gameScreenHeight) : base(position, healthPoints, texture)
+    public Player(Vector2 position, float healthPoints, Texture2D texture) : base(position, healthPoints, texture)
     {
         Inventory = new Inventory();
         Cannons = 0;
         Crew = 0;
-        this.gameScreenWidth = gameScreenWidth;
-        this.gameScreenHeight = gameScreenHeight;
     }
 
     public override void Update(GameTime gameTime)
@@ -40,6 +39,7 @@ public class Player : Entity
             velocity.X = speed;
 
         Position += velocity;
+
 
     }
 }

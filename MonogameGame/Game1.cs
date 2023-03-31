@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Media;
 using Troschuetz.Random;
 using System.IO;
 using System.Xml.Serialization;
+using System.Xml.Linq;
 
 namespace MonogameGame;
 public class Game1 : Game
@@ -46,6 +47,9 @@ public class Game1 : Game
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
+        Window.AllowUserResizing = true;
+
+        //Window.ClientSizeChanged += OnResize;
         _random = new Random();
         _mapDataInt = new int[_mapWidth, _mapHeight];
         _mapGenerator = new MapGenerator(_mapWidth, _mapHeight, _fillProbability, _iterations);
@@ -56,6 +60,7 @@ public class Game1 : Game
     {
         _graphics.PreferredBackBufferWidth = 1800;
         _graphics.PreferredBackBufferHeight = 1200;
+
         _graphics.ApplyChanges();
 
         /*_mapData = new Color[_mapWidth, _mapHeight];
@@ -69,6 +74,7 @@ public class Game1 : Game
         }
 
         */
+        Window.ClientSizeChanged += Window_ClientSizeChanged;
 
         base.Initialize();
     }
@@ -81,67 +87,12 @@ public class Game1 : Game
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
 
-         Art.Load(Content);
+        Art.Load(Content);
 
-
-        Texture2D playerTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
-        float playerStartX = (_mapWidth * 0.5f); // Multiplied by tile size (64)
-        float playerStartY = (_mapHeight * 0.5f) ; // Multiplied by tile size (64)
-
-       
-        _player = new Player(new Vector2(playerStartX, playerStartY), 100, Art.GetPlayerTexture(), 1800, 1200);
-
-        _mapData = new Color[_mapWidth, _mapHeight];
-
-        Task generateMapDataTask = Task.Run(() =>
-        {
-            for (int x = 0; x < _mapWidth; x++)
-            {
-                for (int y = 0; y < _mapHeight; y++)
-                {
-                    _mapData[x, y] = Color.Blue; // Fill the map with water
-                }
-            }
-        });
-
-        // Wait for the map data generation task to complete
-        generateMapDataTask.Wait();
-
-        Texture2D shipTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
-        Texture2D monsterTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
-
-        // Define minimum and maximum distance from player
-        float minDistance = 500;
-        float maxDistance = 2500;
-        int enemyCount = 40;
-
-        Random random = new Random();
-
-        _enemies = new List<Enemy> { };
-
-
-        // Loop to spawn multiple enemies
-        for (int i = 0; i < enemyCount; i++)
-        {
-            // Calculate random angle and distance from player
-            float angle = (float)(random.NextDouble() * Math.PI * 2);
-            float distance = (float)(random.NextDouble() * (maxDistance - minDistance) + minDistance);
-
-            // Calculate enemy position relative to player
-            float enemyX = _player.Position.X + distance * (float)Math.Cos(angle);
-            float enemyY = _player.Position.Y + distance * (float)Math.Sin(angle);
-
-            // Create and add new enemy to list
-            Enemy newEnemy = new Enemy(new Vector2(enemyX, enemyY), 50, Art.GetEnemyTexture());
-            
-            _enemies.Add(newEnemy);
-        }         
-        
-        Song song = Content.Load<Song>("Music/The Buccaneer's Haul Royalty Free Pirate Music");  // Put the name of your song here instead of "song_title"
-        MediaPlayer.Volume = 0.01f;
-        MediaPlayer.Play(song);
-        MediaPlayer.Volume = 0.01f;
-        MediaPlayer.IsRepeating = true;
+        LoadPlayer();
+        LoadMapData();
+        LoadEnemies();
+        LoadAudio();
     }
 
 
@@ -157,9 +108,18 @@ public class Game1 : Game
                 _isSaving = true; 
                 await SaveGameStateAsync();
                 Thread.Sleep(1000);
+                //await LoadGameStateAsync();
                 _isSaving = false; // release the lock
             }
-            _player.Update(gameTime);
+
+            if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.L))
+            { 
+                _isSaving = true;
+                await LoadGameStateAsync();
+                Thread.Sleep(1000);
+                _isSaving = false; // release the lock
+            }
+                _player.Update(gameTime);
             _camera.Follow(_player, _mapWidth, _mapHeight);
             // Create a list to store tasks for each enemy
             List<Task> enemyTasks = new List<Task>();
@@ -178,6 +138,7 @@ public class Game1 : Game
             }
             await Task.WhenAll(enemyTasks);
 
+            
 
             base.Update(gameTime);
         }
@@ -217,8 +178,14 @@ public class Game1 : Game
         {
             for (int y = startY; y < endY; y++)
             {
-                Color color = _mapGenerator.MapDataInt[x,y] == 1 ? Color.Yellow : Color.Blue;
-                _spriteBatch.Draw(_pixel, new Rectangle(x * tileSize, y * tileSize, tileSize, tileSize), color);
+                if (_mapGenerator.MapDataInt[x, y] == 1)
+                {
+                    _spriteBatch.Draw(Art.GetSandTexture(), new Rectangle(x * tileSize, y * tileSize, tileSize, tileSize), Color.White);
+                }
+                else
+                {
+                    _spriteBatch.Draw(Art.GetWaterTexture(), new Rectangle(x * tileSize, y * tileSize, tileSize, tileSize), Color.White);
+                }
             }
         }
     }
@@ -245,10 +212,110 @@ public class Game1 : Game
 
         using (StreamWriter writer = new StreamWriter(filePath, false))
         {
-            await writer.WriteAsync("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+            //await writer.WriteAsync("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
             serializer.Serialize(writer, gameState);
         }
     }
 
+    private async Task LoadGameStateAsync()
+    {
+        string filePath = "Savegame.xml";
 
+        if (File.Exists(filePath))
+        {
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(GameState));
+                GameState gameState = (GameState)
+                    await Task.Run(() => serializer.Deserialize(reader));
+
+                // Update the game state from the loaded data
+                _player.Position = gameState.playerPosition;
+                _player.HealthPoints = gameState.playerHealth;
+
+                for (int i = 0; i < _enemies.Count; i++)
+                {
+                    _enemies[i].Position = gameState.enemyPositions[i];
+                }
+            }
+        }
+    }
+
+    private void LoadPlayer()
+    {
+        Texture2D playerTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
+        float playerStartX = (_mapWidth * 0.5f); // Multiplied by tile size (64)
+        float playerStartY = (_mapHeight * 0.5f); // Multiplied by tile size (64)
+
+
+        _player = new Player(new Vector2(playerStartX, playerStartY), 100, Art.GetPlayerTexture());
+    }
+
+    private async void LoadMapData()
+    {
+        _mapData = new Color[_mapWidth, _mapHeight];
+
+        await fillMapDataTask().ConfigureAwait(false);
+    }
+
+    private async Task fillMapDataTask()
+    {
+        await Task.Run(() =>
+        {
+            for (int x = 0; x < _mapWidth; x++)
+            {
+                for (int y = 0; y < _mapHeight; y++)
+                {
+                    _mapData[x, y] = Color.Blue; // Fill the map with water
+                }
+            }
+        }).ConfigureAwait(false);
+    }
+
+
+    private void LoadEnemies()
+    {
+        // Define minimum and maximum distance from player
+        float minDistance = 500;
+        float maxDistance = 2500;
+        int enemyCount = 40;
+
+        Random random = new Random();
+
+        _enemies = new List<Enemy> { };
+
+
+        // Loop to spawn multiple enemies
+        for (int i = 0; i < enemyCount; i++)
+        {
+            // Calculate random angle and distance from player
+            float angle = (float)(random.NextDouble() * Math.PI * 2);
+            float distance = (float)(random.NextDouble() * (maxDistance - minDistance) + minDistance);
+
+            // Calculate enemy position relative to player
+            float enemyX = _player.Position.X + distance * (float)Math.Cos(angle);
+            float enemyY = _player.Position.Y + distance * (float)Math.Sin(angle);
+
+            // Create and add new enemy to list
+            Enemy newEnemy = new Enemy(new Vector2(enemyX, enemyY), 50, Art.GetEnemyTexture());
+
+            _enemies.Add(newEnemy);
+        }
+    }
+
+    private void LoadAudio()
+    {
+        Song song = Content.Load<Song>("Music/The Buccaneer's Haul Royalty Free Pirate Music");  // Put the name of your song here instead of "song_title"
+        MediaPlayer.Volume = 0.01f;
+        MediaPlayer.Play(song);
+        MediaPlayer.Volume = 0.01f;
+        MediaPlayer.IsRepeating = true;
+    }
+    private void Window_ClientSizeChanged(object sender, EventArgs e)
+    {
+        int newWidth = GraphicsDevice.Viewport.Width;
+        int newHeight = GraphicsDevice.Viewport.Height;
+
+        _camera.UpdateResolution(newWidth, newHeight);
+    }
 }
