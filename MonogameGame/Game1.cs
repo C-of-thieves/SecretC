@@ -1,38 +1,38 @@
-﻿using Microsoft.Xna.Framework;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using System;
 using Microsoft.Xna.Framework.Media;
-using System.IO;
 using System.Xml.Serialization;
+using System.IO;
+using System.Threading;
+
 
 namespace MonogameGame;
 public class Game1 : Game
-{
-    private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
-    private Color[,] _mapData;
+{ 
+    private readonly GraphicsDeviceManager _graphics;
+     private SpriteBatch _spriteBatch;
+      private Color[,] _mapData;
 
-    private bool _isSaving;
-
-    private Camera _camera;
-
-    private Player _player;
-    private MapGenerator _mapGenerator;
-    private List<Enemy> _enemies;
-
-    private Texture2D _pixel;
+      private bool _isSaving;
+     private Camera _camera; 
+     
+       private Player _player;
+         private readonly MapGenerator _mapGenerator;
+           public List<Enemy> _enemies;
+             public List<Explosion> _explosions;
+             
+      private Texture2D _pixel; 
+      public readonly int _mapHeight = 18000;
     public readonly int _mapWidth = 24000;
-    public readonly int _mapHeight = 18000;
-
-    private int _iterations = 2;
-    private float _fillProbability = 0.45f;
-
-
-
+    
+   
+    private readonly float _fillProbability = 0.45f;
+    private readonly int _iterations = 2;
+   
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -46,9 +46,8 @@ public class Game1 : Game
     {
         _graphics.PreferredBackBufferWidth = 1800;
         _graphics.PreferredBackBufferHeight = 1200;
-
         _graphics.ApplyChanges();
-
+        
         Window.ClientSizeChanged += Window_ClientSizeChanged;
 
         base.Initialize();
@@ -56,12 +55,11 @@ public class Game1 : Game
 
     protected override void LoadContent()
     {
-
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         _camera = new Camera();
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
-
+        
         Art.Load(Content);
 
         LoadPlayer();
@@ -70,17 +68,18 @@ public class Game1 : Game
         LoadAudio();
     }
 
-
     protected override async void Update(GameTime gameTime)
     {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
+        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed ||
+            Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
+
         // checks if the gamestate should be locked during saving.
         if (!_isSaving)
         {
             if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                _isSaving = true; 
+                _isSaving = true;
                 await SaveGameStateAsync();
                 Thread.Sleep(1000);
                 //await LoadGameStateAsync();
@@ -88,21 +87,25 @@ public class Game1 : Game
             }
 
             if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.L))
-            { 
+            {
                 _isSaving = true;
                 await LoadGameStateAsync();
                 Thread.Sleep(1000);
                 _isSaving = false; // release the lock
             }
-                _player.Update(gameTime);
+
+            _player.Update(gameTime);
             _camera.Follow(_player, _mapWidth, _mapHeight);
+
+            var cannonBallsToRemove = new List<CannonBall>();
+            var enemiesToRemove = new List<Enemy>();
             // Create a list to store tasks for each enemy
             List<Task> enemyTasks = new List<Task>();
 
             foreach (Enemy enemy in _enemies)
             {
                 enemy.Update(gameTime);
-                Task enemyTask = Task.Run(() => enemy.PerformAI(_player));
+                Task enemyTask = Task.Run(() => enemy.PerformAi(_player));
                 enemyTasks.Add(enemyTask);
 
                 if (_player.CollidesWith(enemy))
@@ -111,33 +114,68 @@ public class Game1 : Game
                     enemy.HandleCollision(_player);
                 }
             }
-            await Task.WhenAll(enemyTasks);
+
+                if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                {
+                    foreach (var cannonBall in _player.cannonBalls)
+                    foreach (var enemy in _enemies)
+                        if (cannonBall.BoundingBox.Intersects(enemy.BoundingBox))
+                        {
+                            var explosion = new Explosion(Art.GetExplosionTexture(), enemy.Position);
+                            _explosions.Add(explosion);
+
+                            enemiesToRemove.Add(enemy);
+
+                            // Add the cannon ball to the list of cannon balls to remove
+                            cannonBallsToRemove.Add(cannonBall);
+                            break;
+                        }
+
+                    foreach (var explosion in _explosions)
+                    {
+                        explosion.Update(gameTime);
+                        if (explosion._lifeSpan <= 0)
+                        {
+                            _explosions.Remove(explosion);
+                            break;
+                        }
+                    }
+
+                    foreach (var enemyToRemove in enemiesToRemove) _enemies.Remove(enemyToRemove);
+                    foreach (var cannonBallToRemove in cannonBallsToRemove)
+                        _player.cannonBalls.Remove(cannonBallToRemove);
+                }
 
             
+
+            await Task.WhenAll(enemyTasks);
 
             base.Update(gameTime);
         }
     }
 
+
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        _spriteBatch.Begin(transformMatrix: _camera.Transform); //transformMatrix: _camera.Transform
+        _spriteBatch.Begin(transformMatrix: _camera.Transform); //transformMatrix: _camera.Transform     
         DrawMap();
         _player.Draw(_spriteBatch);
-        
 
-        foreach (Enemy enemy in _enemies)
+        foreach (var cannonball in _player.cannonBalls)
         {
-            enemy.Draw(_spriteBatch);
+            cannonball.Draw(_spriteBatch);
+            cannonball.FireCannonBall(_player);
         }
 
+        foreach (var enemy in _enemies) enemy.Draw(_spriteBatch);
+
+        foreach (var explosion in _explosions) explosion.Draw(_spriteBatch);
         _spriteBatch.End();
 
         base.Draw(gameTime);
     }
-
 
     private void DrawMap()
     {
@@ -164,8 +202,7 @@ public class Game1 : Game
             }
         }
     }
-
-
+    
     private async Task SaveGameStateAsync()
     {
         string filePath = "Savegame.xml"; //Saves the game to the bin folder for now. So no Appdata shenanigans yet.
@@ -245,8 +282,7 @@ public class Game1 : Game
             }
         }).ConfigureAwait(false);
     }
-
-
+    
     private void LoadEnemies()
     {
         // Define minimum and maximum distance from player
@@ -257,7 +293,7 @@ public class Game1 : Game
         Random random = new Random();
 
         _enemies = new List<Enemy> { };
-
+        _explosions = new List<Explosion>();
 
         // Loop to spawn multiple enemies
         for (int i = 0; i < enemyCount; i++)
@@ -276,7 +312,6 @@ public class Game1 : Game
             _enemies.Add(newEnemy);
         }
     }
-
     private void LoadAudio()
     {
         Song song = Content.Load<Song>("Music/The Buccaneer's Haul Royalty Free Pirate Music");  // Put the name of your song here instead of "song_title"
@@ -285,6 +320,7 @@ public class Game1 : Game
         MediaPlayer.Volume = 0.01f;
         MediaPlayer.IsRepeating = true;
     }
+    
     private void Window_ClientSizeChanged(object sender, EventArgs e)
     {
         int newWidth = GraphicsDevice.Viewport.Width;

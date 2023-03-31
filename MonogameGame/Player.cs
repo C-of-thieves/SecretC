@@ -1,28 +1,36 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using System.Collections.Generic;
 using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using MonogameGame;
 using System.Xml.Linq;
 
 public class Player : Entity
 {
-    public Inventory Inventory { get; set; }
-    public int Cannons { get; set; }
-    public int Crew { get; set; }
-    public int gameScreenWidth { get; private set; }
-    public int gameScreenHeight { get; private set; }
+    private const int cannonballSpeed = 7;
+    private const int cannonballDamage = 10;
+    public List<CannonBall> cannonBalls = new();
 
-    public Player(Vector2 position, float healthPoints, Texture2D texture) : base(position, healthPoints, texture)
+    private float fireCooldown;
+    private readonly float fireDelay = 0.5f; // 0.5 seconds between each shot
+
+
+    public Player(Vector2 position, float healthPoints, Texture2D texture) :
+        base(position, healthPoints, texture)
     {
         Inventory = new Inventory();
+        Ammunition = 10;
         Cannons = 0;
         Crew = 0;
+        healthPoints = 100;
     }
+
+    public Inventory Inventory { get; set; }
+    public int gameScreenWidth { get; }
+    public int gameScreenHeight { get; }
+    public int Cannons { get; set; }
+    public int Crew { get; set; }
+    public int Ammunition { get; set; }
+
 
     public override void Update(GameTime gameTime)
     {
@@ -38,8 +46,25 @@ public class Player : Entity
         else if (Keyboard.GetState().IsKeyDown(Keys.D))
             velocity.X = speed;
 
+        if (fireCooldown > 0) fireCooldown -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        if (Keyboard.GetState().IsKeyDown(Keys.Space) && fireCooldown <= 0)
+        {
+            fireCooldown = fireDelay;
+            var origin = new Vector2(
+                Position.X + Texture.Width / 2,
+                Position.Y + Texture.Height / 2
+            );
+
+            for (var i = Ammunition; i > 0; i--)
+                cannonBalls.Add(new CannonBall(origin,1, cannonballSpeed, cannonballDamage, Art.GetCannonBallTexture()));
+        }
+
+        foreach (var cannonball in cannonBalls) cannonball.Update(gameTime);
+
         Position += velocity;
 
 
+        base.Update(gameTime);
     }
 }

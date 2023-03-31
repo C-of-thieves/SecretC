@@ -1,3 +1,4 @@
-﻿
-using var game = new MonogameGame.Game1();
+﻿using MonogameGame;
+
+using var game = new Game1();
 game.Run();

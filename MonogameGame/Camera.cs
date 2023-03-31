@@ -1,28 +1,21 @@
 ﻿using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
-    public class Camera
-    {
+public class Camera
+{
     public Matrix Transform { get; private set; }
     public int gameScreenWidth  { get; private set; } 
     public int gameScreenHeight { get; private set; }
 
+    
     public Camera()
     {
         gameScreenWidth= 1800;
         gameScreenHeight= 1200;
     }
-
     public void Follow(Player target, int mapWidth, int mapHeight)
     {
         float cameraPositionX = -target.Position.X + (gameScreenWidth / 2) - (target.Texture.Width / 2);
         float cameraPositionY = -target.Position.Y + (gameScreenHeight / 2) - (target.Texture.Height / 2);
-
         Transform = Matrix.CreateTranslation(cameraPositionX, cameraPositionY, 0);
         Clamp(mapWidth, mapHeight, gameScreenWidth, gameScreenHeight);
     }

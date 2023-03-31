@@ -19,4 +19,3 @@ public class Item
         Quantity = 1;
     }
 }
-
