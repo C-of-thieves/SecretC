@@ -4,11 +4,12 @@ using Microsoft.Xna.Framework.Graphics;
 
 public class CannonBall : Entity
 {
-    public CannonBall(Vector2 position, int cannonballSpeed, int cannonballDamage, Texture2D texture) : base(position,
+    public CannonBall(Vector2 position, float healthPoints,int cannonballSpeed, int cannonballDamage, Texture2D texture) : base(position, healthPoints,
         texture)
     {
         Damage = cannonballDamage;
         Speed = cannonballSpeed;
+        HealthPoints = healthPoints;
     }
 
     public int Damage { get; set; }

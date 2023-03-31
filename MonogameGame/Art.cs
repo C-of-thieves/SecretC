@@ -10,8 +10,11 @@ internal static class Art
     private static Texture2D enemyTexture3;
     private static Texture2D enemyTexture4;
     private static Texture2D enemyTexture5;
-    private static Random random;
+    private static Texture2D sandTexture;
+    private static Texture2D waterTexture;
     private static Texture2D cannonBallTexture;
+    private static Texture2D explosionTexture;
+    private static Random random;
 
     public static void Load(ContentManager content)
     {
@@ -22,6 +25,11 @@ internal static class Art
         enemyTexture4 = content.Load<Texture2D>("Default size/Ships/ship (4)");
         enemyTexture5 = content.Load<Texture2D>("Default size/Ships/ship (10)");
         cannonBallTexture = content.Load<Texture2D>("Default size/Ship parts/cannonBall");
+        sandTexture = content.Load<Texture2D>("Default size/Tiles/tile_18");
+        waterTexture = content.Load<Texture2D>("Default size/Tiles/tile_73");
+        explosionTexture = content.Load<Texture2D>("Default size/Effects/explosion1");
+
+
     }
 
     public static Texture2D GetPlayerTexture()
@@ -29,6 +37,19 @@ internal static class Art
         return playerTexture;
     }
 
+    public static Texture2D GetSandTexture()
+    {
+        return sandTexture;
+    }
+
+    public static Texture2D GetWaterTexture()
+    {
+        return waterTexture;
+    }
+    public static Texture2D GetExplosionTexture()
+    {
+        return explosionTexture;
+    }
     public static Texture2D GetCannonBallTexture()
     {
         return cannonBallTexture;

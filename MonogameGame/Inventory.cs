@@ -1,8 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
 
 public class Inventory
 {
-    private readonly Dictionary<string, Item> _items;
+    private Dictionary<string, Item> _items;
 
     public Inventory()
     {
@@ -12,9 +17,13 @@ public class Inventory
     public void AddItem(Item item)
     {
         if (_items.ContainsKey(item.Name))
+        {
             _items[item.Name].Quantity += item.Quantity;
+        }
         else
+        {
             _items.Add(item.Name, item);
+        }
     }
 
     public void RemoveItem(string itemName)
@@ -22,13 +31,19 @@ public class Inventory
         if (_items.ContainsKey(itemName))
         {
             _items[itemName].Quantity--;
-            if (_items[itemName].Quantity <= 0) _items.Remove(itemName);
+            if (_items[itemName].Quantity <= 0)
+            {
+                _items.Remove(itemName);
+            }
         }
     }
 
     public int GetItemCount(string itemName)
     {
-        if (_items.ContainsKey(itemName)) return _items[itemName].Quantity;
+        if (_items.ContainsKey(itemName))
+        {
+            return _items[itemName].Quantity;
+        }
         return 0;
     }
 

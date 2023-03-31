@@ -18,7 +18,7 @@ public class Enemy : Entity
     private EnemyState CurrentState;
 
 
-    public Enemy(Vector2 position, float healthPoints, Texture2D texture) : base(position, texture)
+    public Enemy(Vector2 position, float healthPoints, Texture2D texture) : base(position, healthPoints, texture)
     {
         DroppedItems = new List<Item>();
         _timer = 0;
@@ -27,7 +27,7 @@ public class Enemy : Entity
 
     public List<Item> DroppedItems { get; set; }
 
-    public void PerformAI(Player player)
+    public void PerformAi(Player player)
     {
         _timer += 1;
 
@@ -41,7 +41,7 @@ public class Enemy : Entity
         float wanderTime = 240; // 4 seconds at 60 FPS
 
         // Adjust the speed value to control how fast monsters move
-        var speed = 0.8f;
+        float speed = 0.8f;
 
         // Update enemy state based on the distance to the player
         if (distanceToPlayer < chaseDistanceThreshold)

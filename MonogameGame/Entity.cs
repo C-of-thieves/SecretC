@@ -3,15 +3,17 @@ using Microsoft.Xna.Framework.Graphics;
 
 public abstract class Entity
 {
-    public Entity(Vector2 position, Texture2D texture)
+    public Entity(Vector2 position, float healthPoints, Texture2D texture)
     {
         Position = position;
         Texture = texture;
+        HealthPoints = healthPoints;
     }
 
     public Vector2 Position { get; set; }
     public Vector2 Velocity { get; set; }
     public Texture2D Texture { get; set; }
+    public float HealthPoints { get; set; }
 
     public Rectangle BoundingBox
     {
@@ -25,7 +27,7 @@ public abstract class Entity
 
     public virtual void Update(GameTime gameTime)
     {
-        var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
         Position += Velocity * deltaTime;
     }

@@ -1,49 +1,45 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using System.Xml.Serialization;
+using System.IO;
+using System.Threading;
+
 
 namespace MonogameGame;
-
 public class Game1 : Game
-{
-    public readonly int _mapHeight = 18000;
-    public readonly int _mapWidth = 24000;
-    private readonly float _scale = 0.1f;
-    private readonly float _threshold = 0.4f;
-
-    private Camera _camera;
-    public List<Enemy> _enemies;
-    public List<Explosion> _explosions;
-
-    private Texture2D _explosionTexture;
-    private readonly float _fillProbability = 0.45f;
+{ 
     private readonly GraphicsDeviceManager _graphics;
+     private SpriteBatch _spriteBatch;
+      private Color[,] _mapData;
+
+      private bool _isSaving;
+     private Camera _camera; 
+     
+       private Player _player;
+         private readonly MapGenerator _mapGenerator;
+           public List<Enemy> _enemies;
+             public List<Explosion> _explosions;
+             
+      private Texture2D _pixel; 
+      public readonly int _mapHeight = 18000;
+    public readonly int _mapWidth = 24000;
+    
+   
+    private readonly float _fillProbability = 0.45f;
     private readonly int _iterations = 2;
-    private Color[,] _mapData;
-
-    private int[,] _mapDataInt;
-    private readonly MapGenerator _mapGenerator;
-
-    private Texture2D _pixel;
-
-    private Player _player;
-    private Random _random;
-    private SpriteBatch _spriteBatch;
-
+   
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
-        _random = new Random();
-        _mapDataInt = new int[_mapWidth, _mapHeight];
+        Window.AllowUserResizing = true;
         _mapGenerator = new MapGenerator(_mapWidth, _mapHeight, _fillProbability, _iterations);
-        //IsFixedTimeStep = false;
     }
 
     protected override void Initialize()
@@ -51,18 +47,8 @@ public class Game1 : Game
         _graphics.PreferredBackBufferWidth = 1800;
         _graphics.PreferredBackBufferHeight = 1200;
         _graphics.ApplyChanges();
-
-        /*_mapData = new Color[_mapWidth, _mapHeight];
-
-        for (int x = 0; x < _mapWidth; x++)
-        {
-            for (int y = 0; y < _mapHeight; y++)
-            {
-                _mapData[x, y] = Color.Blue; // Fill the map with water
-            }
-        }
-
-        */
+        
+        Window.ClientSizeChanged += Window_ClientSizeChanged;
 
         base.Initialize();
     }
@@ -73,62 +59,14 @@ public class Game1 : Game
         _camera = new Camera();
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
+        
         Art.Load(Content);
 
-        _explosionTexture = Content.Load<Texture2D>("Default size/Effects/explosion1");
-
-        var playerStartX = _mapWidth * 0.5f; // Multiplied by tile size (64)
-        var playerStartY = _mapHeight * 0.5f; // Multiplied by tile size (64)
-
-        _player = new Player(new Vector2(playerStartX, playerStartY), 100, Art.GetPlayerTexture(), 1800, 1200);
-
-        _mapData = new Color[_mapWidth, _mapHeight];
-
-        var generateMapDataTask = Task.Run(() =>
-        {
-            for (var x = 0; x < _mapWidth; x++)
-            for (var y = 0; y < _mapHeight; y++)
-                _mapData[x, y] = Color.Blue; // Fill the map with water
-        });
-
-        // Wait for the map data generation task to complete
-        generateMapDataTask.Wait();
-
-        // Define minimum and maximum distance from player
-        float minDistance = 500;
-        float maxDistance = 2500;
-        var enemyCount = 40;
-
-        var random = new Random();
-
-        _enemies = new List<Enemy>();
-        _explosions = new List<Explosion>();
-
-        // Loop to spawn multiple enemies
-        for (var i = 0; i < enemyCount; i++)
-        {
-            // Calculate random angle and distance from player
-            var angle = (float)(random.NextDouble() * Math.PI * 2);
-            var distance = (float)(random.NextDouble() * (maxDistance - minDistance) + minDistance);
-
-            // Calculate enemy position relative to player
-            var enemyX = _player.Position.X + distance * (float)Math.Cos(angle);
-            var enemyY = _player.Position.Y + distance * (float)Math.Sin(angle);
-
-            // Create and add new enemy to list
-            var newEnemy = new Enemy(new Vector2(enemyX, enemyY), 50, Art.GetEnemyTexture());
-
-            _enemies.Add(newEnemy);
-        }
-
-        var song = Content.Load<Song>(
-            "Music/The Buccaneer's Haul Royalty Free Pirate Music"); // Put the name of your song here instead of "song_title"
-        MediaPlayer.Volume = 0.01f;
-        MediaPlayer.Play(song);
-        MediaPlayer.Volume = 0.01f;
-        MediaPlayer.IsRepeating = true;
+        LoadPlayer();
+        LoadMapData();
+        LoadEnemies();
+        LoadAudio();
     }
-
 
     protected override async void Update(GameTime gameTime)
     {
@@ -136,63 +74,85 @@ public class Game1 : Game
             Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
-        var cannonBallsToRemove = new List<CannonBall>();
-        var enemiesToRemove = new List<Enemy>();
-
-        _player.Update(gameTime);
-        _camera.Follow(_player, _mapWidth, _mapHeight);
-
-        if (Keyboard.GetState().IsKeyDown(Keys.Space))
+        // checks if the gamestate should be locked during saving.
+        if (!_isSaving)
         {
-            foreach (var cannonBall in _player.cannonBalls)
-            foreach (var enemy in _enemies)
-                if (cannonBall.BoundingBox.Intersects(enemy.BoundingBox))
-                {
-                    var explosion = new Explosion(_explosionTexture, enemy.Position);
-                    _explosions.Add(explosion);
-                    
-
-                    enemiesToRemove.Add(enemy);
-
-                    // Add the cannon ball to the list of cannon balls to remove
-                    cannonBallsToRemove.Add(cannonBall);
-                    break;
-                }
-            foreach (var explosion in _explosions)
+            if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.S))
             {
-                explosion.Update(gameTime);
-                if (explosion._lifeSpan <= 0)
-                {
-                    _explosions.Remove(explosion);
-                    break;
-                }
-            }   
-
-            foreach (var enemyToRemove in enemiesToRemove) _enemies.Remove(enemyToRemove);
-            foreach (var cannonBallToRemove in cannonBallsToRemove) _player.cannonBalls.Remove(cannonBallToRemove);
-        }
-
-        // Create a list to store tasks for each enemy
-        var enemyTasks = new List<Task>();
-
-        foreach (var enemy in _enemies)
-        {
-            enemy.Update(gameTime);
-            var enemyTask = Task.Run(() => enemy.PerformAI(_player));
-            enemyTasks.Add(enemyTask);
-
-            if (_player.CollidesWith(enemy))
-            {
-                _player.HandleCollision(enemy);
-                enemy.HandleCollision(_player);
+                _isSaving = true;
+                await SaveGameStateAsync();
+                Thread.Sleep(1000);
+                //await LoadGameStateAsync();
+                _isSaving = false; // release the lock
             }
+
+            if (Keyboard.GetState().IsKeyDown(Keys.LeftControl) && Keyboard.GetState().IsKeyDown(Keys.L))
+            {
+                _isSaving = true;
+                await LoadGameStateAsync();
+                Thread.Sleep(1000);
+                _isSaving = false; // release the lock
+            }
+
+            _player.Update(gameTime);
+            _camera.Follow(_player, _mapWidth, _mapHeight);
+
+            var cannonBallsToRemove = new List<CannonBall>();
+            var enemiesToRemove = new List<Enemy>();
+            // Create a list to store tasks for each enemy
+            List<Task> enemyTasks = new List<Task>();
+
+            foreach (Enemy enemy in _enemies)
+            {
+                enemy.Update(gameTime);
+                Task enemyTask = Task.Run(() => enemy.PerformAi(_player));
+                enemyTasks.Add(enemyTask);
+
+                if (_player.CollidesWith(enemy))
+                {
+                    _player.HandleCollision(enemy);
+                    enemy.HandleCollision(_player);
+                }
+
+                if (Keyboard.GetState().IsKeyDown(Keys.Space))
+                {
+                    foreach (var cannonBall in _player.cannonBalls)
+                    foreach (var enemy1 in _enemies)
+                        if (cannonBall.BoundingBox.Intersects(enemy.BoundingBox))
+                        {
+                            var explosion = new Explosion(Art.GetExplosionTexture(), enemy1.Position);
+                            _explosions.Add(explosion);
+
+                            enemiesToRemove.Add(enemy1);
+
+                            // Add the cannon ball to the list of cannon balls to remove
+                            cannonBallsToRemove.Add(cannonBall);
+                            break;
+                        }
+
+                    foreach (var explosion in _explosions)
+                    {
+                        explosion.Update(gameTime);
+                        if (explosion._lifeSpan <= 0)
+                        {
+                            _explosions.Remove(explosion);
+                            break;
+                        }
+                    }
+
+                    foreach (var enemyToRemove in enemiesToRemove) _enemies.Remove(enemyToRemove);
+                    foreach (var cannonBallToRemove in cannonBallsToRemove)
+                        _player.cannonBalls.Remove(cannonBallToRemove);
+                }
+
+            }
+
+            await Task.WhenAll(enemyTasks);
+
+            base.Update(gameTime);
         }
-
-        await Task.WhenAll(enemyTasks);
-
-
-        base.Update(gameTime);
     }
+
 
     protected override void Draw(GameTime gameTime)
     {
@@ -218,19 +178,153 @@ public class Game1 : Game
 
     private void DrawMap()
     {
-        var tileSize = 64;
-        var drawDistance = 3000; // Change this value to adjust the draw distance
+        int tileSize = 64;
+        int drawDistance = 3000; // Change this value to adjust the draw distance
 
-        var startX = (int)Math.Max(0, (_player.Position.X - drawDistance) / tileSize);
-        var startY = (int)Math.Max(0, (_player.Position.Y - drawDistance) / tileSize);
-        var endX = (int)Math.Min(_mapWidth, (_player.Position.X + drawDistance) / tileSize);
-        var endY = (int)Math.Min(_mapHeight, (_player.Position.Y + drawDistance) / tileSize);
+        int startX = (int)Math.Max(0, (_player.Position.X - drawDistance) / tileSize);
+        int startY = (int)Math.Max(0, (_player.Position.Y - drawDistance) / tileSize);
+        int endX = (int)Math.Min(_mapWidth, (_player.Position.X + drawDistance) / tileSize);
+        int endY = (int)Math.Min(_mapHeight, (_player.Position.Y + drawDistance) / tileSize);
 
-        for (var x = startX; x < endX; x++)
-        for (var y = startY; y < endY; y++)
+        for (int x = startX; x < endX; x++)
         {
-            var color = _mapGenerator.MapDataInt[x, y] == 1 ? Color.Yellow : Color.Blue;
-            _spriteBatch.Draw(_pixel, new Rectangle(x * tileSize, y * tileSize, tileSize, tileSize), color);
+            for (int y = startY; y < endY; y++)
+            {
+                if (_mapGenerator.MapDataInt[x, y] == 1)
+                {
+                    _spriteBatch.Draw(Art.GetSandTexture(), new Rectangle(x * tileSize, y * tileSize, tileSize, tileSize), Color.White);
+                }
+                else
+                {
+                    _spriteBatch.Draw(Art.GetWaterTexture(), new Rectangle(x * tileSize, y * tileSize, tileSize, tileSize), Color.White);
+                }
+            }
         }
+    }
+    
+    private async Task SaveGameStateAsync()
+    {
+        string filePath = "Savegame.xml"; //Saves the game to the bin folder for now. So no Appdata shenanigans yet.
+        GameState gameState = new()
+        {
+            playerPosition = _player.Position,
+            playerHealth = _player.HealthPoints,
+            playerCannons= _player.Cannons,
+            playerCrew= _player.Crew
+        };
+        //gameState.Player = _player;
+
+        foreach (Enemy enemy in _enemies)
+        {
+            gameState.enemyPositions.Add(enemy.Position);
+        }
+
+        XmlSerializer serializer = new XmlSerializer(typeof(GameState));
+
+        using (StreamWriter writer = new StreamWriter(filePath, false))
+        {
+            await writer.WriteAsync("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+            serializer.Serialize(writer, gameState);
+        }
+    }
+
+    private async Task LoadGameStateAsync()
+    {
+        string filePath = "Savegame.xml";
+
+        if (File.Exists(filePath))
+        {
+            using (StreamReader reader = new StreamReader(filePath))
+            {
+                XmlSerializer serializer = new XmlSerializer(typeof(GameState));
+                GameState gameState = (GameState)
+                    await Task.Run(() => serializer.Deserialize(reader));
+
+                // Update the game state from the loaded data
+                _player.Position = gameState.playerPosition;
+                _player.HealthPoints = gameState.playerHealth;
+
+                for (int i = 0; i < _enemies.Count; i++)
+                {
+                    _enemies[i].Position = gameState.enemyPositions[i];
+                }
+            }
+        }
+    }
+
+    private void LoadPlayer()
+    {
+        float playerStartX = (_mapWidth * 0.5f); // Multiplied by tile size (64)
+        float playerStartY = (_mapHeight * 0.5f); // Multiplied by tile size (64)
+
+
+        _player = new Player(new Vector2(playerStartX, playerStartY), 100, Art.GetPlayerTexture());
+    }
+
+    private async void LoadMapData()
+    {
+        _mapData = new Color[_mapWidth, _mapHeight];
+
+        await FillMapDataTask().ConfigureAwait(false);
+    }
+
+    private async Task FillMapDataTask()
+    {
+        await Task.Run(() =>
+        {
+            for (int x = 0; x < _mapWidth; x++)
+            {
+                for (int y = 0; y < _mapHeight; y++)
+                {
+                    _mapData[x, y] = Color.Blue; // Fill the map with water
+                }
+            }
+        }).ConfigureAwait(false);
+    }
+    
+    private void LoadEnemies()
+    {
+        // Define minimum and maximum distance from player
+        float minDistance = 500;
+        float maxDistance = 2500;
+        int enemyCount = 40;
+
+        Random random = new Random();
+
+        _enemies = new List<Enemy> { };
+        _explosions = new List<Explosion>();
+
+        // Loop to spawn multiple enemies
+        for (int i = 0; i < enemyCount; i++)
+        {
+            // Calculate random angle and distance from player
+            float angle = (float)(random.NextDouble() * Math.PI * 2);
+            float distance = (float)(random.NextDouble() * (maxDistance - minDistance) + minDistance);
+
+            // Calculate enemy position relative to player
+            float enemyX = _player.Position.X + distance * (float)Math.Cos(angle);
+            float enemyY = _player.Position.Y + distance * (float)Math.Sin(angle);
+
+            // Create and add new enemy to list
+            Enemy newEnemy = new Enemy(new Vector2(enemyX, enemyY), 50, Art.GetEnemyTexture());
+
+            _enemies.Add(newEnemy);
+        }
+    }
+    private void LoadAudio()
+    {
+        Song song = Content.Load<Song>("Music/The Buccaneer's Haul Royalty Free Pirate Music");  // Put the name of your song here instead of "song_title"
+        MediaPlayer.Volume = 0.01f;
+        MediaPlayer.Play(song);
+        MediaPlayer.Volume = 0.01f;
+        MediaPlayer.IsRepeating = true;
+    }
+    
+    private void Window_ClientSizeChanged(object sender, EventArgs e)
+    {
+        int newWidth = GraphicsDevice.Viewport.Width;
+        int newHeight = GraphicsDevice.Viewport.Height;
+
+        _camera.UpdateResolution(newWidth, newHeight);
     }
 }

@@ -2,31 +2,33 @@
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using System.Xml.Linq;
 
 public class Player : Entity
 {
     private const int cannonballSpeed = 7;
     private const int cannonballDamage = 10;
-
     public List<CannonBall> cannonBalls = new();
 
     private float fireCooldown;
     private readonly float fireDelay = 0.5f; // 0.5 seconds between each shot
 
 
-    public Player(Vector2 position, float healthPoints, Texture2D texture, int gameScreenWidth, int gameScreenHeight) :
-        base(position, texture)
+    public Player(Vector2 position, float healthPoints, Texture2D texture) :
+        base(position, healthPoints, texture)
     {
         Inventory = new Inventory();
-        this.gameScreenWidth = gameScreenWidth;
-        this.gameScreenHeight = gameScreenHeight;
         Ammunition = 10;
+        Cannons = 0;
+        Crew = 0;
         healthPoints = 100;
     }
 
     public Inventory Inventory { get; set; }
     public int gameScreenWidth { get; }
     public int gameScreenHeight { get; }
+    public int Cannons { get; set; }
+    public int Crew { get; set; }
     public int Ammunition { get; set; }
 
 
@@ -55,7 +57,7 @@ public class Player : Entity
             );
 
             for (var i = Ammunition; i > 0; i--)
-                cannonBalls.Add(new CannonBall(origin, cannonballSpeed, cannonballDamage, Art.GetCannonBallTexture()));
+                cannonBalls.Add(new CannonBall(origin,1, cannonballSpeed, cannonballDamage, Art.GetCannonBallTexture()));
         }
 
         foreach (var cannonball in cannonBalls) cannonball.Update(gameTime);
