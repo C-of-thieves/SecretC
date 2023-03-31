@@ -1,18 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using SimplexNoise;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using DotnetNoise;
 using System;
 using Microsoft.Xna.Framework.Media;
-using Troschuetz.Random;
 using System.IO;
 using System.Xml.Serialization;
-using System.Xml.Linq;
 
 namespace MonogameGame;
 public class Game1 : Game
@@ -20,7 +15,6 @@ public class Game1 : Game
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
     private Color[,] _mapData;
-    private Random _random;
 
     private bool _isSaving;
 
@@ -33,10 +27,7 @@ public class Game1 : Game
     private Texture2D _pixel;
     public readonly int _mapWidth = 24000;
     public readonly int _mapHeight = 18000;
-    private readonly float _scale = 0.1f;
-    private readonly float _threshold = 0.4f;
 
-    private int[,] _mapDataInt;
     private int _iterations = 2;
     private float _fillProbability = 0.45f;
 
@@ -48,12 +39,7 @@ public class Game1 : Game
         Content.RootDirectory = "Content";
         IsMouseVisible = true;
         Window.AllowUserResizing = true;
-
-        //Window.ClientSizeChanged += OnResize;
-        _random = new Random();
-        _mapDataInt = new int[_mapWidth, _mapHeight];
         _mapGenerator = new MapGenerator(_mapWidth, _mapHeight, _fillProbability, _iterations);
-        //IsFixedTimeStep = false;
     }
 
     protected override void Initialize()
@@ -63,17 +49,6 @@ public class Game1 : Game
 
         _graphics.ApplyChanges();
 
-        /*_mapData = new Color[_mapWidth, _mapHeight];
-
-        for (int x = 0; x < _mapWidth; x++)
-        {
-            for (int y = 0; y < _mapHeight; y++)
-            {
-                _mapData[x, y] = Color.Blue; // Fill the map with water
-            }
-        }
-
-        */
         Window.ClientSizeChanged += Window_ClientSizeChanged;
 
         base.Initialize();
@@ -212,7 +187,7 @@ public class Game1 : Game
 
         using (StreamWriter writer = new StreamWriter(filePath, false))
         {
-            //await writer.WriteAsync("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
+            await writer.WriteAsync("<?xml version=\"1.0\" encoding=\"utf-8\"?>\n");
             serializer.Serialize(writer, gameState);
         }
     }
@@ -243,7 +218,6 @@ public class Game1 : Game
 
     private void LoadPlayer()
     {
-        Texture2D playerTexture = Content.Load<Texture2D>("Default size/Ships/ship (6)");
         float playerStartX = (_mapWidth * 0.5f); // Multiplied by tile size (64)
         float playerStartY = (_mapHeight * 0.5f); // Multiplied by tile size (64)
 
@@ -255,10 +229,10 @@ public class Game1 : Game
     {
         _mapData = new Color[_mapWidth, _mapHeight];
 
-        await fillMapDataTask().ConfigureAwait(false);
+        await FillMapDataTask().ConfigureAwait(false);
     }
 
-    private async Task fillMapDataTask()
+    private async Task FillMapDataTask()
     {
         await Task.Run(() =>
         {
