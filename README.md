@@ -6,3 +6,7 @@ Be prepared to face fierce opponents, from small merchant vessels to mighty gall
 But fear not, ye have a trusty crew by yer side, ready to man the sails and weapons as ye engage in epic sea battles. With each victory, ye'll gain new weapons and upgrades to help ye become the most feared pirate on the high seas!
 
 So weigh anchor and set sail, matey! The adventure awaits in this 2D top-down pirate game. Will ye emerge as the most fearsome pirate on the seas or will ye be sunk to the depths of the ocean? Only time will tell!
+## Guide and information on the game
+To navigate the ship the WASD keys can be used. Enemy ships will randomly spawn around the player and chase the player if nearby. To fire your cannons press space, once enemy ships have been hit they get destroyed.
+
+To run the game, simply navigate to the bin folder and execute the file. Alternatively the project can be ran through Visual Studio.
