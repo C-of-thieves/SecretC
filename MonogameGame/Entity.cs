@@ -1,26 +1,31 @@
-﻿using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 
 public abstract class Entity
 {
-    public Vector2 Position { get; set; }
-    public Vector2 Velocity { get; set; }
-    public Texture2D Texture { get; set; }
-
     public Entity(Vector2 position, Texture2D texture)
     {
         Position = position;
         Texture = texture;
     }
 
+    public Vector2 Position { get; set; }
+    public Vector2 Velocity { get; set; }
+    public Texture2D Texture { get; set; }
+
+    public Rectangle BoundingBox
+    {
+        get
+        {
+            var width = Texture.Width;
+            var height = Texture.Height;
+            return new Rectangle((int)Position.X, (int)Position.Y, width, height);
+        }
+    }
+
     public virtual void Update(GameTime gameTime)
     {
-        float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        var deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
         Position += Velocity * deltaTime;
     }
@@ -30,35 +35,25 @@ public abstract class Entity
         spriteBatch.Draw(Texture, Position, Color.White);
     }
 
-    public Rectangle BoundingBox
-    {
-        get
-        {
-            int width = Texture.Width;
-            int height = Texture.Height;
-            return new Rectangle((int)Position.X, (int)Position.Y, width, height);
-        }
-    }
-
     public bool CollidesWith(Entity other)
     {
-        return this.BoundingBox.Intersects(other.BoundingBox);
+        return BoundingBox.Intersects(other.BoundingBox);
     }
 
     public void HandleCollision(Entity other)
     {
-        Vector2 mtv = CalculateMTV(other);
+        var mtv = CalculateMtv(other);
 
         Position += mtv;
         other.Position -= mtv;
     }
 
-    private Vector2 CalculateMTV(Entity other)
+    private Vector2 CalculateMtv(Entity other)
     {
-        Rectangle intersection = Rectangle.Intersect(BoundingBox, other.BoundingBox);
-        Vector2 direction = Vector2.Normalize(Position - other.Position);
+        var intersection = Rectangle.Intersect(BoundingBox, other.BoundingBox);
+        var direction = Vector2.Normalize(Position - other.Position);
         float distance = intersection.Width > intersection.Height ? intersection.Height : intersection.Width;
-        Vector2 mtv = direction * distance;
+        var mtv = direction * distance;
         return mtv;
     }
 }

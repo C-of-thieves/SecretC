@@ -1,13 +1,8 @@
-﻿using Microsoft.Xna.Framework.Content;
+﻿using System;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Troschuetz.Random;
 
-static class Art
+internal static class Art
 {
     private static Texture2D playerTexture;
     private static Texture2D enemyTexture1;
@@ -42,7 +37,7 @@ static class Art
     public static Texture2D GetEnemyTexture()
     {
         random = new Random();
-        int num = random.Next(5);
+        var num = random.Next(5);
 
         return num switch
         {
@@ -51,7 +46,7 @@ static class Art
             3 => enemyTexture3,
             4 => enemyTexture4,
             5 => enemyTexture5,
-            _ => enemyTexture1,
+            _ => enemyTexture1
         };
     }
 }
