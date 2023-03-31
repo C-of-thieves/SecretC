@@ -113,17 +113,18 @@ public class Game1 : Game
                     _player.HandleCollision(enemy);
                     enemy.HandleCollision(_player);
                 }
+            }
 
                 if (Keyboard.GetState().IsKeyDown(Keys.Space))
                 {
                     foreach (var cannonBall in _player.cannonBalls)
-                    foreach (var enemy1 in _enemies)
+                    foreach (var enemy in _enemies)
                         if (cannonBall.BoundingBox.Intersects(enemy.BoundingBox))
                         {
-                            var explosion = new Explosion(Art.GetExplosionTexture(), enemy1.Position);
+                            var explosion = new Explosion(Art.GetExplosionTexture(), enemy.Position);
                             _explosions.Add(explosion);
 
-                            enemiesToRemove.Add(enemy1);
+                            enemiesToRemove.Add(enemy);
 
                             // Add the cannon ball to the list of cannon balls to remove
                             cannonBallsToRemove.Add(cannonBall);
@@ -145,7 +146,7 @@ public class Game1 : Game
                         _player.cannonBalls.Remove(cannonBallToRemove);
                 }
 
-            }
+            
 
             await Task.WhenAll(enemyTasks);
 
