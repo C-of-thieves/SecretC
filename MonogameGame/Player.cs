@@ -1,8 +1,7 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using System.Xml.Linq;
+using System.Collections.Generic;
 
 public class Player : Entity
 {
@@ -57,7 +56,7 @@ public class Player : Entity
             );
 
             for (var i = Ammunition; i > 0; i--)
-                cannonBalls.Add(new CannonBall(origin,1, cannonballSpeed, cannonballDamage, Art.GetCannonBallTexture()));
+                cannonBalls.Add(new CannonBall(origin, 1, cannonballSpeed, cannonballDamage, Art.GetCannonBallTexture()));
         }
 
         foreach (var cannonball in cannonBalls) cannonball.Update(gameTime);

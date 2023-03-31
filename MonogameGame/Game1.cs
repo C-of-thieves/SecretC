@@ -1,38 +1,38 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using System.Xml.Serialization;
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading;
+using System.Threading.Tasks;
+using System.Xml.Serialization;
 
 
 namespace MonogameGame;
 public class Game1 : Game
-{ 
+{
     private readonly GraphicsDeviceManager _graphics;
-     private SpriteBatch _spriteBatch;
-      private Color[,] _mapData;
+    private SpriteBatch _spriteBatch;
+    private Color[,] _mapData;
 
-      private bool _isSaving;
-     private Camera _camera; 
-     
-       private Player _player;
-         private readonly MapGenerator _mapGenerator;
-           public List<Enemy> _enemies;
-             public List<Explosion> _explosions;
-             
-      private Texture2D _pixel; 
-      public readonly int _mapHeight = 18000;
+    private bool _isSaving;
+    private Camera _camera;
+
+    private Player _player;
+    private readonly MapGenerator _mapGenerator;
+    public List<Enemy> _enemies;
+    public List<Explosion> _explosions;
+
+    private Texture2D _pixel;
+    public readonly int _mapHeight = 18000;
     public readonly int _mapWidth = 24000;
-    
-   
+
+
     private readonly float _fillProbability = 0.45f;
     private readonly int _iterations = 2;
-   
+
     public Game1()
     {
         _graphics = new GraphicsDeviceManager(this);
@@ -47,7 +47,7 @@ public class Game1 : Game
         _graphics.PreferredBackBufferWidth = 1800;
         _graphics.PreferredBackBufferHeight = 1200;
         _graphics.ApplyChanges();
-        
+
         Window.ClientSizeChanged += Window_ClientSizeChanged;
 
         base.Initialize();
@@ -59,7 +59,7 @@ public class Game1 : Game
         _camera = new Camera();
         _pixel = new Texture2D(GraphicsDevice, 1, 1);
         _pixel.SetData(new[] { Color.White });
-        
+
         Art.Load(Content);
 
         LoadPlayer();
@@ -115,9 +115,9 @@ public class Game1 : Game
                 }
             }
 
-                if (Keyboard.GetState().IsKeyDown(Keys.Space))
-                {
-                    foreach (var cannonBall in _player.cannonBalls)
+            if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            {
+                foreach (var cannonBall in _player.cannonBalls)
                     foreach (var enemy in _enemies)
                         if (cannonBall.BoundingBox.Intersects(enemy.BoundingBox))
                         {
@@ -131,22 +131,22 @@ public class Game1 : Game
                             break;
                         }
 
-                    foreach (var explosion in _explosions)
+                foreach (var explosion in _explosions)
+                {
+                    explosion.Update(gameTime);
+                    if (explosion._lifeSpan <= 0)
                     {
-                        explosion.Update(gameTime);
-                        if (explosion._lifeSpan <= 0)
-                        {
-                            _explosions.Remove(explosion);
-                            break;
-                        }
+                        _explosions.Remove(explosion);
+                        break;
                     }
-
-                    foreach (var enemyToRemove in enemiesToRemove) _enemies.Remove(enemyToRemove);
-                    foreach (var cannonBallToRemove in cannonBallsToRemove)
-                        _player.cannonBalls.Remove(cannonBallToRemove);
                 }
 
-            
+                foreach (var enemyToRemove in enemiesToRemove) _enemies.Remove(enemyToRemove);
+                foreach (var cannonBallToRemove in cannonBallsToRemove)
+                    _player.cannonBalls.Remove(cannonBallToRemove);
+            }
+
+
 
             await Task.WhenAll(enemyTasks);
 
@@ -202,7 +202,7 @@ public class Game1 : Game
             }
         }
     }
-    
+
     private async Task SaveGameStateAsync()
     {
         string filePath = "Savegame.xml"; //Saves the game to the bin folder for now. So no Appdata shenanigans yet.
@@ -210,8 +210,8 @@ public class Game1 : Game
         {
             playerPosition = _player.Position,
             playerHealth = _player.HealthPoints,
-            playerCannons= _player.Cannons,
-            playerCrew= _player.Crew
+            playerCannons = _player.Cannons,
+            playerCrew = _player.Crew
         };
         //gameState.Player = _player;
 
@@ -282,7 +282,7 @@ public class Game1 : Game
             }
         }).ConfigureAwait(false);
     }
-    
+
     private void LoadEnemies()
     {
         // Define minimum and maximum distance from player
@@ -320,7 +320,7 @@ public class Game1 : Game
         MediaPlayer.Volume = 0.01f;
         MediaPlayer.IsRepeating = true;
     }
-    
+
     private void Window_ClientSizeChanged(object sender, EventArgs e)
     {
         int newWidth = GraphicsDevice.Viewport.Width;

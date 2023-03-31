@@ -1,10 +1,10 @@
-﻿using System;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using System;
 
 public class CannonBall : Entity
 {
-    public CannonBall(Vector2 position, float healthPoints,int cannonballSpeed, int cannonballDamage, Texture2D texture) : base(position, healthPoints,
+    public CannonBall(Vector2 position, float healthPoints, int cannonballSpeed, int cannonballDamage, Texture2D texture) : base(position, healthPoints,
         texture)
     {
         Damage = cannonballDamage;

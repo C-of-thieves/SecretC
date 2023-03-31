@@ -24,7 +24,7 @@ public class Explosion
     public void Update(GameTime gameTime)
     {
         _elapsedTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
-        
+
         _lifeSpan -= _elapsedTime;
     }
 

@@ -3,14 +3,14 @@
 public class Camera
 {
     public Matrix Transform { get; private set; }
-    public int gameScreenWidth  { get; private set; } 
+    public int gameScreenWidth { get; private set; }
     public int gameScreenHeight { get; private set; }
 
-    
+
     public Camera()
     {
-        gameScreenWidth= 1800;
-        gameScreenHeight= 1200;
+        gameScreenWidth = 1800;
+        gameScreenHeight = 1200;
     }
     public void Follow(Player target, int mapWidth, int mapHeight)
     {
